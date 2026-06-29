@@ -1,4 +1,5 @@
-local shipSprite
+local shipSpriteQuad --- @type love.Quad
+local fullShipSprite --- @type love.Image
 local player = {
   x = 64,
   y = 100,
@@ -6,7 +7,19 @@ local player = {
 }
 
 local function load()
-  shipSprite = love.graphics.newImage("assets/sprites/spaceship.png")
+  fullShipSprite = love.graphics.newImage("assets/sprites/shmupjet.png")
+  shipSpriteQuad = love.graphics.newQuad(32, 0, 16, 16, fullShipSprite)
+end
+
+local function updateQuad(x)
+  shipSpriteQuad:setViewport(
+    x,
+    0,
+    16,
+    16,
+    fullShipSprite:getWidth(),
+    fullShipSprite:getHeight()
+  )
 end
 
 local function update()
@@ -24,11 +37,12 @@ local function update()
 
   if love.keyboard.isDown("right") then
     player.x = player.x + player.speed
+    updateQuad(62)
   end
 end
 
 local function draw()
-  love.graphics.draw(shipSprite, player.x, player.y)
+  love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
 end
 
 return {
