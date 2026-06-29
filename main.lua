@@ -1,10 +1,10 @@
 local push = require "lib.push"
 local sti = require "lib.sti"
+local player = require "player.player"
 
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
-windowWidth, windowHeight = windowWidth * 0.85, windowHeight * 0.85
+windowWidth, windowHeight = windowWidth * 0.9, windowHeight * 0.9
 local targetWidth, targetHeight = 128, 128
--- local shipSprite
 
 math.randomseed(os.time())
 
@@ -22,10 +22,15 @@ function love.load()
     canvas = true
   })
 
-  -- shipSprite = love.graphics.newImage("assets/sprites/spaceship.png")
   map = sti("maps/advanced-shmup-map.lua")
+  local mapSegmentsOnScreen = 2
+  mapBottomPx = (
+    map.height * (map.tileheight - mapSegmentsOnScreen)
+  ) * -1
   map.x = 0
   map.y = mapBottomPx
+
+  player.load()
 end
 
 function love.resize(w, h)
@@ -35,12 +40,14 @@ end
 function love.update(dt)
   map:update(dt)
 
-  if love.keyboard.isDown("up") then
-    map.y = math.min(0, map.y + 2)
+  if map.y < 0 then
+    map.y = map.y + 0.2
   end
 
-  if love.keyboard.isDown("down") then
-    map.y = math.max(mapBottomPx, map.y - 2)
+  player.update()
+
+  if love.keyboard.isDown("q") then
+    love.event.quit(0)
   end
 end
 
@@ -48,6 +55,7 @@ function love.draw()
   push:start()
 
   map:draw(map.x, map.y)
+  player.draw()
 
   push:finish()
 end
