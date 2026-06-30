@@ -3,8 +3,9 @@ local fullShipSprite --- @type love.Image
 local player = {
   x = 64,
   y = 100,
-  speed = 1
+  speed = 0.3
 }
+local input = 0
 
 local function load()
   fullShipSprite = love.graphics.newImage("assets/sprites/shmupjet.png")
@@ -23,26 +24,33 @@ local function updateQuad(x)
 end
 
 local function update()
+  input = 0
+
   if love.keyboard.isDown("up") then
     player.y = player.y - player.speed
+    input = input + 4
   end
 
   if love.keyboard.isDown("down") then
     player.y = player.y + player.speed
+    input = input + 8
   end
 
   if love.keyboard.isDown("left") then
     player.x = player.x - player.speed
+    input = input + 1
   end
 
   if love.keyboard.isDown("right") then
     player.x = player.x + player.speed
-    updateQuad(62)
+    -- updateQuad(64)
+    input = input + 2
   end
 end
 
 local function draw()
   love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
+  love.graphics.print(input, 10, 10)
 end
 
 return {
