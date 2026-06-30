@@ -11,6 +11,10 @@ math.randomseed(os.time())
 local map
 local mapBottomPx = 15 * -8
 
+function math.clamp(num, min, max)
+  return math.max(min, math.min(num, max))
+end
+
 function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.graphics.setNewFont("assets/fonts/pico8.ttf")
@@ -46,7 +50,7 @@ function love.update(dt)
 
   player.update()
 
-  if love.keyboard.isDown("q") then
+  if love.keyboard.isDown("escape") then
     love.event.quit(0)
   end
 end
