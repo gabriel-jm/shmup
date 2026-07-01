@@ -1,4 +1,5 @@
 local inputCode = require "player.input"
+local bullets = require "player.bullets"
 
 local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
@@ -23,6 +24,8 @@ local function load()
     sprite.height,
     fullShipSprite
   )
+
+  bullets.load()
 end
 
 local function updateQuad(position)
@@ -72,11 +75,18 @@ local function update()
   end
 
   lastInput = input
+
+  if love.keyboard.isDown("x") then
+    bullets.shot(player.x, player.y)
+  end
+
+  bullets.update()
 end
 
 local function draw()
+  bullets.draw()
+
   love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
-  love.graphics.print(sprite.position, 10, 10)
 end
 
 return {

@@ -4,7 +4,7 @@ local sti = require "lib.sti"
 local player = require "player.player"
 
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
-windowWidth, windowHeight = windowWidth * 0.5, windowHeight * 0.5
+windowWidth, windowHeight = windowWidth * 0.7, windowHeight * 0.7
 local targetWidth, targetHeight = 128, 128
 
 math.randomseed(os.time())
