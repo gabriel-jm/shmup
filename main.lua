@@ -1,9 +1,10 @@
+require "math.math"
 local push = require "lib.push"
 local sti = require "lib.sti"
 local player = require "player.player"
 
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
-windowWidth, windowHeight = windowWidth * 0.9, windowHeight * 0.9
+windowWidth, windowHeight = windowWidth * 0.5, windowHeight * 0.5
 local targetWidth, targetHeight = 128, 128
 
 math.randomseed(os.time())
@@ -11,13 +12,9 @@ math.randomseed(os.time())
 local map
 local mapBottomPx = 15 * -8
 
-function math.clamp(num, min, max)
-  return math.max(min, math.min(num, max))
-end
-
 function love.load()
   love.graphics.setDefaultFilter("nearest", "nearest")
-  love.graphics.setNewFont("assets/fonts/pico8.ttf")
+  love.graphics.setNewFont("assets/fonts/pico8.ttf", 5)
   push:setupScreen(targetWidth, targetHeight, windowWidth, windowHeight, {
     fullscreen = false,
     vsync = true,

@@ -3,7 +3,7 @@ local inputCode = require "player.input"
 local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
 local sprite = {
-  position = 2.5,
+  position = 0, -- -1, 0, 1
   width = 16,
   height = 16
 }
@@ -17,7 +17,7 @@ local lastInput = 0
 local function load()
   fullShipSprite = love.graphics.newImage("assets/sprites/shmupjet.png")
   shipSpriteQuad = love.graphics.newQuad(
-    math.floor(sprite.position) * 16,
+    32,
     0,
     sprite.width,
     sprite.height,
@@ -26,14 +26,11 @@ local function load()
 end
 
 local function updateQuad(position)
-  if sprite.position == position then
-    return
-  end
+  sprite.position = math.clamp(position, -1, 1)
 
-  sprite.position = math.clamp(position, 0, 4)
-
+  local pos = sprite.position * 2.4 + 2.5
   shipSpriteQuad:setViewport(
-    math.floor(sprite.position) * 16,
+    math.floor(pos) * 16,
     0,
     sprite.width,
     sprite.height,
@@ -54,8 +51,7 @@ local function update()
     player.y = math.floor(player.y) + 0.5
   end
 
-  local targetSprite = 2.5
-  local bankingSpeed = 0.5
+  local targetSprite = 0
   if input > 0 then
     local dx = dirx[input]
     local dy = diry[input]
@@ -63,17 +59,16 @@ local function update()
     player.x = player.x + dx * speed
     player.y = player.y + dy * speed
 
-    if dx < 0 then
-      targetSprite = 0
-    elseif dx > 0 then
-      targetSprite = 4
-    end
+    targetSprite = math.sign(dx)
   end
 
-  if targetSprite < sprite.position then
-    updateQuad(sprite.position - bankingSpeed)
-  elseif targetSprite > sprite.position then
-    updateQuad(sprite.position + bankingSpeed)
+  local bankingSpeed = 0.25
+  local differenceSign = math.sign(targetSprite - sprite.position)
+  local position = sprite.position + differenceSign * bankingSpeed
+  local newPosition = math.clamp(position, -1, 1)
+
+  if sprite.position ~= newPosition then
+    updateQuad(newPosition)
   end
 
   lastInput = input
