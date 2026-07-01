@@ -45,8 +45,6 @@ local function draw()
   for _,b in pairs(shots) do
     love.graphics.draw(bulletSprite, b.x, b.y)
   end
-
-  love.graphics.print(#shots, 8, 5)
 end
 
 return {

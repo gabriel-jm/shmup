@@ -13,6 +13,8 @@ local map
 local mapBottomPx = 15 * -8
 
 function love.load()
+  T = 0 -- Frames Counter
+
   love.graphics.setDefaultFilter("nearest", "nearest")
   love.graphics.setNewFont("assets/fonts/pico8.ttf", 5)
   push:setupScreen(targetWidth, targetHeight, windowWidth, windowHeight, {
@@ -40,6 +42,8 @@ end
 
 function love.update(dt)
   map:update(dt)
+
+  T = T < 1000 and T + 1 or 0
 
   if map.y < 0 then
     map.y = map.y + 0.2

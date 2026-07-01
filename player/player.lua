@@ -1,5 +1,6 @@
 local inputCode = require "player.input"
 local bullets = require "player.bullets"
+local shipFlames = require "player.ship-flames"
 
 local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
@@ -15,19 +16,6 @@ local player = {
 }
 local lastInput = 0
 
-local function load()
-  fullShipSprite = love.graphics.newImage("assets/sprites/shmupjet.png")
-  shipSpriteQuad = love.graphics.newQuad(
-    32,
-    0,
-    sprite.width,
-    sprite.height,
-    fullShipSprite
-  )
-
-  bullets.load()
-end
-
 local function updateQuad(position)
   sprite.position = math.clamp(position, -1, 1)
 
@@ -40,6 +28,20 @@ local function updateQuad(position)
     fullShipSprite:getWidth(),
     fullShipSprite:getHeight()
   )
+end
+
+local function load()
+  fullShipSprite = love.graphics.newImage("assets/sprites/shmupjet.png")
+  shipSpriteQuad = love.graphics.newQuad(
+    32,
+    0,
+    sprite.width,
+    sprite.height,
+    fullShipSprite
+  )
+
+  bullets.load()
+  shipFlames.load()
 end
 
 local dirx = {-1, 1,  0, 0, -0.7,  0.7, 0.7, -0.7}
@@ -81,12 +83,15 @@ local function update()
   end
 
   bullets.update()
+  shipFlames.update()
 end
 
 local function draw()
   bullets.draw()
 
   love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
+
+  shipFlames.draw(player.x, player.y)
 end
 
 return {
