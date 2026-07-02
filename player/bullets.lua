@@ -1,55 +1,99 @@
 local bulletSprites = {
-  small = {
-    image = nil,
-    quad = nil
-  },
-  big = {
-    image = nil,
-    quad = nil
-  }
+  small = nil,
+  big = nil
 }
 local shots = {}
 local shotDelay = 0
 local weapon = 2
+
+local function newBullet(props)
+  local anim = props.anim or {0}
+  local index = T % #anim + 1
+  local bullet = {
+    x = props.x or 0,
+    y = props.y or 0,
+    sx = props.sx or 0,
+    sy = props.sy or -3,
+    type = props.type or "small",
+    anim = anim,
+    animIndex = index,
+    curAnimPos = index
+  }
+
+  function bullet:animate()
+    if #self.anim == 1 then
+      return
+    end
+
+    self.animIndex = self.animIndex + 0.05
+
+    local animIndex = math.floor(self.animIndex)
+
+    if animIndex > #self.anim then
+      self.animIndex = 1
+    end
+
+    local newPos = self.anim[animIndex]
+
+    if self.curAnimPos ~= newPos then
+      self.curAnimPos = newPos
+
+      self.quad:setViewport(
+        self.curAnimPos,
+        0,
+        8,
+        16,
+        self.sprite:getWidth(),
+        self.sprite:getHeight()
+      )
+    end
+  end
+
+  return bullet
+end
+
+local function newBigBullet(props)
+  local bullet = newBullet(props)
+  bullet.sprite = bulletSprites.big
+  bullet.quad = love.graphics.newQuad(0, 0, 8, 16, bullet.sprite)
+
+  return bullet
+end
 
 local function smallShot(x, y)
   if shotDelay > 0 or #shots >= 6 then
     return
   end
 
-  table.insert(shots, {
+  shotDelay = 8
+  table.insert(shots, newBullet {
     x = x + 3,
     y = y + 2,
-    sx = 0,
-    sy = -3
   })
-  table.insert(shots, {
+  table.insert(shots, newBullet {
     x = x + 9,
     y = y + 2,
-    sx = 0,
-    sy = -3
   })
-  shotDelay = 8
 end
 
 local function bigShot(x, y)
-  if shotDelay > 0 or #shots >= 12 then
+  if shotDelay > 0 or #shots >= 100 then
     return
   end
 
-  table.insert(shots, {
+  shotDelay = 8
+  table.insert(shots, newBigBullet {
     x = x,
     y = y + 2,
-    sx = 0,
-    sy = -3
+    type = "big",
+    anim = {0, 8, 16}
   })
-  table.insert(shots, {
+  table.insert(shots, newBigBullet {
     x = x + 8,
     y = y + 2,
-    sx = 0,
-    sy = -3
+    type = "big",
+    anim = {0, 8, 16}
   })
-  shotDelay = 8
 end
 
 local function shot(x, y)
@@ -62,34 +106,12 @@ local function shot(x, y)
   end
 end
 
-local bigBulletSprPos = 0 -- Sprite Position
-local bigBulletAnimationPos = {0, 8, 16, 8}
-
-local function animateBigBullet()
-  local framePos = math.floor(T/3) % 4 + 1
-  local currentPos = bigBulletAnimationPos[framePos]
-
-  if currentPos ~= bigBulletSprPos then
-    bigBulletSprPos = currentPos
-    bulletSprites.big.quad:setViewport(
-      bigBulletSprPos,
-      0,
-      8,
-      16,
-      bulletSprites.big.image:getWidth(),
-      bulletSprites.big.image:getHeight()
-    )
-  end
-end
-
 local function load()
   local smallBulletSprite = love.graphics.newImage("assets/sprites/bullet.png")
-  bulletSprites.small.image = smallBulletSprite
+  bulletSprites.small = smallBulletSprite
 
   local bigBulletSprite = love.graphics.newImage("assets/sprites/big-bullet.png")
-  local bigBulletQuad = love.graphics.newQuad(0, 0, 8, 16, bigBulletSprite)
-  bulletSprites.big.image = bigBulletSprite
-  bulletSprites.big.quad = bigBulletQuad
+  bulletSprites.big = bigBulletSprite
 end
 
 local function update()
@@ -101,10 +123,10 @@ local function update()
     b.x = b.x + b.sx
     b.y = b.y + b.sy
 
+    b:animate()
+
     if b.y < -58 then
       table.remove(shots, i)
-    elseif weapon == 2 then
-      animateBigBullet()
     end
   end
 end
@@ -113,7 +135,7 @@ local function draw()
   for _,b in pairs(shots) do
     if weapon == 1 then
       love.graphics.draw(
-        bulletSprites.small.image,
+        bulletSprites.small,
         b.x,
         b.y
       )
@@ -121,8 +143,8 @@ local function draw()
 
     if weapon == 2 then
       love.graphics.draw(
-        bulletSprites.big.image,
-        bulletSprites.big.quad,
+        bulletSprites.big,
+        b.quad,
         b.x,
         b.y
       )

@@ -46,7 +46,7 @@ function love.update(dt)
   T = T < 1000 and T + 1 or 0
 
   if map.y < 0 then
-    map.y = map.y + 0.2
+    map.y = map.y + 0.4
   end
 
   player.update()
