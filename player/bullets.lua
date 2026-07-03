@@ -1,3 +1,5 @@
+local muzzle = require "player.muzzle"
+
 local bulletSprites = {
   small = nil,
   big = nil
@@ -31,6 +33,7 @@ local function newBullet(props)
 
     if animIndex > #self.anim then
       self.animIndex = 1
+      animIndex = 1
     end
 
     local newPos = self.anim[animIndex]
@@ -84,19 +87,21 @@ local function bigShot(x, y)
   shotDelay = 8
   table.insert(shots, newBigBullet {
     x = x,
-    y = y + 2,
+    y = y - 6,
     type = "big",
     anim = {0, 8, 16}
   })
   table.insert(shots, newBigBullet {
     x = x + 8,
-    y = y + 2,
+    y = y - 6,
     type = "big",
     anim = {0, 8, 16}
   })
 end
 
 local function shot(x, y)
+  muzzle.muzz()
+  
   if weapon == 1 then
     return smallShot(x, y)
   end
@@ -112,9 +117,13 @@ local function load()
 
   local bigBulletSprite = love.graphics.newImage("assets/sprites/big-bullet.png")
   bulletSprites.big = bigBulletSprite
+
+  muzzle.load()
 end
 
 local function update()
+  muzzle.update()
+
   if shotDelay > 0 then
     shotDelay = shotDelay - 1
   end
@@ -131,7 +140,7 @@ local function update()
   end
 end
 
-local function draw()
+local function draw(playerX, playerY)
   for _,b in pairs(shots) do
     if weapon == 1 then
       love.graphics.draw(
@@ -150,6 +159,8 @@ local function draw()
       )
     end
   end
+
+  muzzle.draw(playerX, playerY)
 end
 
 return {

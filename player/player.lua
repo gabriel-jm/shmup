@@ -87,7 +87,7 @@ local function update()
 end
 
 local function draw()
-  bullets.draw()
+  bullets.draw(player.x, player.y)
 
   love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
 
