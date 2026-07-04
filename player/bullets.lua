@@ -10,7 +10,7 @@ local weapon = 2
 
 local function newBullet(props)
   local anim = props.anim or {0}
-  local index = T % #anim + 1
+  local index = math.floor(T / 4) % #anim + 1
   local bullet = {
     x = props.x or 0,
     y = props.y or 0,
@@ -77,14 +77,15 @@ local function smallShot(x, y)
     x = x + 9,
     y = y + 2,
   })
+  muzzle.muzz()
 end
 
 local function bigShot(x, y)
-  if shotDelay > 0 or #shots >= 100 then
+  if shotDelay > 0 or #shots >= 20 then
     return
   end
 
-  shotDelay = 8
+  shotDelay = 6
   table.insert(shots, newBigBullet {
     x = x,
     y = y - 6,
@@ -97,11 +98,10 @@ local function bigShot(x, y)
     type = "big",
     anim = {0, 8, 16}
   })
+  muzzle.muzz()
 end
 
 local function shot(x, y)
-  muzzle.muzz()
-  
   if weapon == 1 then
     return smallShot(x, y)
   end

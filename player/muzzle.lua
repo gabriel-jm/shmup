@@ -2,55 +2,62 @@ local muzzleSprite --- @type love.Image
 local muzzleQuad --- @type love.Quad
 
 local animation = {0, 16, 32, 48}
-local animIndex = 1
-local currentPos = 1
-local show = false
+local animationEnd = #animation + 0.95
 
--- add muzzle array
+local muzzles = {}
+
+local function newMuzzle()
+  local muzz = {
+    quad = love.graphics.newQuad(0, 0, 16, 16, muzzleSprite),
+    animProgress = 1,
+    currentAnimIndex = 1
+  }
+
+  table.insert(muzzles, muzz)
+end
 
 local function muzz()
-  animIndex = 1
-  show = true
+  newMuzzle()
 end
 
 local function load()
   muzzleSprite = love.graphics.newImage("assets/sprites/muzzle.png")
-  muzzleQuad = love.graphics.newQuad(0, 0, 16, 16, muzzleSprite)
 end
 
 local function update()
-  if not show then
-    return
-  end
+  for i, m in pairs(muzzles) do
+    m.animProgress = m.animProgress + 0.75
 
-  animIndex = animIndex + 1.2
+    if m.animProgress > animationEnd then
+      table.remove(muzzles, i)
+      goto continue
+    end
 
-  if animIndex > #animation then
-    -- animIndex = 1
-    show = false
-  end
+    if m.currentAnimIndex ~= math.floor(m.animProgress) then
+      m.currentAnimIndex = math.floor(m.animProgress)
 
-  if currentPos ~= animIndex then
-    currentPos = math.floor(animIndex)
+      local imageX = (m.currentAnimIndex - 1) * 16
+      m.quad:setViewport(
+        imageX,
+        0,
+        16,
+        16,
+        muzzleSprite:getWidth(),
+        muzzleSprite:getHeight()
+      )
+    end
 
-    muzzleQuad:setViewport(
-      (currentPos - 1) * 16,
-      0,
-      16,
-      16,
-      muzzleSprite:getWidth(),
-      muzzleSprite:getHeight()
-    )
+    ::continue::
   end
 end
 
 local function draw(playerX, playerY)
-  if not show then
-    return
+  for _,m in pairs(muzzles) do
+    love.graphics.draw(muzzleSprite, m.quad, playerX - 4, playerY - 7)
+    love.graphics.draw(muzzleSprite, m.quad, playerX + 4, playerY - 7)
   end
 
-  love.graphics.draw(muzzleSprite, muzzleQuad, playerX - 4, playerY - 7)
-  love.graphics.draw(muzzleSprite, muzzleQuad, playerX + 4, playerY - 7)
+  love.graphics.print("muzzles:"..#muzzles, 5, 5)
 end
 
 return {
