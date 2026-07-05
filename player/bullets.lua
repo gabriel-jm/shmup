@@ -4,6 +4,7 @@ local bulletSprites = {
   small = nil,
   big = nil
 }
+local shotSfx --- @type love.Source
 local shots = {}
 local shotDelay = 0
 local weapon = 2
@@ -52,6 +53,14 @@ local function newBullet(props)
     end
   end
 
+  function bullet:draw()
+    love.graphics.draw(
+      bulletSprites.small,
+      self.x,
+      self.y
+    )
+  end
+
   return bullet
 end
 
@@ -59,6 +68,15 @@ local function newBigBullet(props)
   local bullet = newBullet(props)
   bullet.sprite = bulletSprites.big
   bullet.quad = love.graphics.newQuad(0, 0, 8, 16, bullet.sprite)
+
+  function bullet:draw()
+    love.graphics.draw(
+      bulletSprites.big,
+      self.quad,
+      self.x,
+      self.y
+    )
+  end
 
   return bullet
 end
@@ -99,16 +117,15 @@ local function bigShot(x, y)
     anim = {0, 8, 16}
   })
   muzzle.muzz()
+  shotSfx:clone():play()
 end
 
-local function shot(x, y)
-  if weapon == 1 then
-    return smallShot(x, y)
-  end
+local weapons = {smallShot, bigShot}
 
-  if weapon == 2 then
-    return bigShot(x, y)
-  end
+local function shot(x, y)
+  local w = weapons[weapon]
+
+  w(x, y)
 end
 
 local function load()
@@ -117,6 +134,10 @@ local function load()
 
   local bigBulletSprite = love.graphics.newImage("assets/sprites/big-bullet.png")
   bulletSprites.big = bigBulletSprite
+
+  shotSfx = love.audio.newSource("assets/sfx/shot.wav", "static")
+  shotSfx:setVolume(0.15)
+  shotSfx:setPitch(0.6)
 
   muzzle.load()
 end
@@ -142,22 +163,7 @@ end
 
 local function draw(playerX, playerY)
   for _,b in pairs(shots) do
-    if weapon == 1 then
-      love.graphics.draw(
-        bulletSprites.small,
-        b.x,
-        b.y
-      )
-    end
-
-    if weapon == 2 then
-      love.graphics.draw(
-        bulletSprites.big,
-        b.quad,
-        b.x,
-        b.y
-      )
-    end
+    b:draw()
   end
 
   muzzle.draw(playerX, playerY)

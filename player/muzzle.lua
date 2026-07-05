@@ -1,5 +1,4 @@
 local muzzleSprite --- @type love.Image
-local muzzleQuad --- @type love.Quad
 
 local animation = {0, 16, 32, 48}
 local animationEnd = #animation + 0.95
@@ -56,8 +55,6 @@ local function draw(playerX, playerY)
     love.graphics.draw(muzzleSprite, m.quad, playerX - 4, playerY - 7)
     love.graphics.draw(muzzleSprite, m.quad, playerX + 4, playerY - 7)
   end
-
-  love.graphics.print("muzzles:"..#muzzles, 5, 5)
 end
 
 return {
