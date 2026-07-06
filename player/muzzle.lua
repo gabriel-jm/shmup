@@ -8,8 +8,8 @@ local muzzles = {}
 local function newMuzzle()
   local muzz = {
     quad = love.graphics.newQuad(0, 0, 16, 16, muzzleSprite),
-    animProgress = 1,
-    currentAnimIndex = 1
+    animProgress = 0,
+    currentAnimIndex = 0
   }
 
   table.insert(muzzles, muzz)
@@ -25,7 +25,7 @@ end
 
 local function update()
   for i, m in pairs(muzzles) do
-    m.animProgress = m.animProgress + 0.75
+    m.animProgress = m.animProgress + 1
 
     if m.animProgress > animationEnd then
       table.remove(muzzles, i)
