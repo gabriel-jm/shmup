@@ -1,14 +1,16 @@
 local pico8Colors = require "pico8.colors"
+local pico8Math = require "pico8.math"
 
 local particles = {}
 
-local function newParticle(x, y)
+local function newParticle(props)
   local particle = {
-    x = x,
-    y = y,
-    r = 2,
-    delay = nil,
-    lifespan = math.random(30, 60)
+    x = props.x,
+    y = props.y,
+    r = props.r or 2,
+    delay = props.delay or nil,
+    lifespan = props.lifespan or 30,
+    type = props.type or "grow"
   }
 
   function particle:update()
@@ -17,18 +19,24 @@ local function newParticle(x, y)
     end
 
     if self.delay then
-      self.delay = self.delay <= 0
-        and nil
-        or self.delay - 1
+      if self.delay <= 0 then
+        self.delay = nil
+      else
+        self.delay = self.delay - 1
+      end
+
       return
     end
 
     self.lifespan = self.lifespan - 1
-    self.r = self.r + 1
+
+    if self.type == "grow" then
+      self.r = self.r + 1
+    end
   end
 
   function particle:draw()
-    if self.delay ~= nil then
+    if self.delay then
       return
     end
 
@@ -47,6 +55,42 @@ local function newParticle(x, y)
   table.insert(particles, particle)
 end
 
+local function explosionCloud(x, y)
+  local parts = 6
+  local angle = math.random()
+  local step = 1 / parts
+  local distance = 8
+
+  for i = 1, parts do
+    newParticle({
+      x = x + pico8Math.sin(angle + step * i) * distance,
+      y = y + pico8Math.cos(angle + step * i) * distance,
+      r = 6,
+      delay = i,
+      lifespan = 30
+    })
+  end
+
+  newParticle({
+    x = x,
+    y = y,
+    r = 5,
+    delay = 10,
+    lifespan = 30
+  })
+end
+
+local function explode(x, y)
+  newParticle({
+    x = x,
+    y = y,
+    r = 17,
+    lifespan = 2
+  })
+
+  explosionCloud(x, y)
+end
+
 local function load()
 end
 
@@ -62,8 +106,7 @@ end
 
 function love:keypressed(key)
   if key == "x" then
-    local x, y = math.random(24, 104), math.random(24, 104)
-    newParticle(x, y)
+    explode(64, 64)
   end
 end
 
