@@ -8,9 +8,15 @@ local function newParticle(props)
     x = props.x,
     y = props.y,
     r = props.r or 2,
+    originX = props.x,
+    originY = props.y,
     delay = props.delay or nil,
     lifespan = props.lifespan or 30,
-    type = props.type or "grow"
+    toX = props.toX or nil,
+    toY = props.toY or nil,
+    toR = props.toR or nil,
+    speed = props.speed or 1,
+    onEnd = props.onEnd or nil
   }
 
   function particle:update()
@@ -28,11 +34,16 @@ local function newParticle(props)
       return
     end
 
-    self.lifespan = self.lifespan - 1
-
-    if self.type == "grow" then
-      self.r = self.r + 1
+    if self.toX and self.toY then
+      self.x = self.x + (self.toX - self.x) / (4 / self.speed)
+      self.y = self.y + (self.toY - self.y) / (4 / self.speed)
     end
+
+    if self.toR then
+      self.r = self.r + (self.toR - self.r) / (5 / self.speed)
+    end
+
+    self.lifespan = self.lifespan - 1
   end
 
   function particle:draw()
@@ -48,35 +59,65 @@ local function newParticle(props)
     love.graphics.setColor(pico8Colors.yellow)
     love.graphics.circle("fill", sx, sy - 2, math.max(r - 2, 0))
 
-    love.graphics.setColor(pico8Colors.white)
-    love.graphics.circle("fill", sx, sy - 4, math.max(r - 4, 0))
+    -- love.graphics.setColor(pico8Colors.white)
+    -- love.graphics.circle("fill", sx, sy - 4, math.max(r - 4, 0))
+  end
+
+  function particle:ending(index)
+    if self.onEnd == "return" then
+      self.onEnd = nil
+      self.lifespan = 10
+      self.toR = 0
+
+      return
+    end
+
+    if self.onEnd == "fade" then
+      self.onEnd = nil
+      self.lifespan = 10
+      self.toR = 0
+      self.speed = self.speed / 2
+
+      return
+    end
+
+    table.remove(particles, index)
   end
 
   table.insert(particles, particle)
 end
 
-local function explosionCloud(x, y)
+local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd)
   local parts = 6
   local angle = math.random()
   local step = 1 / parts
-  local distance = 8
 
   for i = 1, parts do
+    local distance = math.floor(4 + toR * 0.7)
+    local halfDistance = distance / 2
+    local currentAngle = angle + step * i
+
     newParticle({
-      x = x + pico8Math.sin(angle + step * i) * distance,
-      y = y + pico8Math.cos(angle + step * i) * distance,
-      r = 6,
-      delay = i,
-      lifespan = 30
+      x = x + pico8Math.sin(currentAngle) * halfDistance,
+      y = y + pico8Math.cos(currentAngle) * halfDistance,
+      toR = toR,
+      delay = delay,
+      lifespan = lifespan,
+      toX = x + pico8Math.sin(currentAngle) * distance,
+      toY = y + pico8Math.cos(currentAngle) * distance,
+      onEnd = onEnd,
+      speed = speed
     })
   end
 
   newParticle({
     x = x,
     y = y,
-    r = 5,
-    delay = 10,
-    lifespan = 30
+    toR = toR + 1,
+    delay = delay,
+    lifespan = lifespan,
+    onEnd = onEnd,
+    speed = speed
   })
 end
 
@@ -88,7 +129,9 @@ local function explode(x, y)
     lifespan = 2
   })
 
-  explosionCloud(x, y)
+  explosionCloud(x, y, 6, 2, 13, 1, "return")
+  explosionCloud(x-math.random(5), y-5, 8, 12, 20, 1, "return")
+  explosionCloud(x+math.random(5), y-10, 10, 25, 25, 0.8, "fade")
 end
 
 local function load()
@@ -98,8 +141,8 @@ local function update()
   for i, p in pairs(particles) do
     p:update()
 
-    if p.lifespan <= 0 then
-      table.remove(particles, i)
+    if p.lifespan <= 0 or p.r < 0.5 then
+      p:ending(i)
     end
   end
 end
@@ -110,7 +153,6 @@ function love:keypressed(key)
   end
 end
 
-
 local function draw()
   love.graphics.clear(pico8Colors.blue)
 
@@ -118,6 +160,7 @@ local function draw()
     p:draw()
   end
 
+  love.graphics.setColor(1, 1, 1, 1)
   love.graphics.print("#particles:"..#particles, 1, 1)
 end
 

@@ -4,7 +4,7 @@ local push = require "lib.push"
 local bombScene = require "scenes.bomb-scene"
 
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
-windowWidth, windowHeight = windowWidth * 0.7, windowHeight * 0.7
+windowWidth, windowHeight = windowWidth * 0.85, windowHeight * 0.85
 local targetWidth, targetHeight = 128, 128
 
 math.randomseed(os.time())
