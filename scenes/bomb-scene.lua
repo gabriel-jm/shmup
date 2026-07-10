@@ -12,11 +12,13 @@ local function newParticle(props)
     originY = props.y,
     delay = props.delay or nil,
     lifespan = props.lifespan or 30,
+    maxLifespan = props.lifespan or 30,
     toX = props.toX or nil,
     toY = props.toY or nil,
     toR = props.toR or nil,
     speed = props.speed or 1,
-    onEnd = props.onEnd or nil
+    onEnd = props.onEnd or nil,
+    colors = props.colors or {{pico8Colors.white, pico8Colors.white}}
   }
 
   function particle:update()
@@ -52,11 +54,16 @@ local function newParticle(props)
     end
 
     local sx, sy, r = self.x, self.y, self.r
+    local lifespanPercentage = 1 - self.lifespan / self.maxLifespan
+    local colorIndex = math.floor(
+      math.max(lifespanPercentage * (#self.colors + 1), 1)
+    )
+    local colors = self.colors[colorIndex]
 
-    love.graphics.setColor(pico8Colors.orange)
+    love.graphics.setColor(colors[1])
     love.graphics.circle("fill", sx, sy, math.max(r, 0))
 
-    love.graphics.setColor(pico8Colors.yellow)
+    love.graphics.setColor(colors[2])
     love.graphics.circle("fill", sx, sy - 2, math.max(r - 2, 0))
 
     -- love.graphics.setColor(pico8Colors.white)
@@ -87,7 +94,7 @@ local function newParticle(props)
   table.insert(particles, particle)
 end
 
-local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd)
+local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd, colors)
   local parts = 6
   local angle = math.random()
   local step = 1 / parts
@@ -106,7 +113,8 @@ local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd)
       toX = x + pico8Math.sin(currentAngle) * distance,
       toY = y + pico8Math.cos(currentAngle) * distance,
       onEnd = onEnd,
-      speed = speed
+      speed = speed,
+      colors = colors
     })
   end
 
@@ -117,7 +125,8 @@ local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd)
     delay = delay,
     lifespan = lifespan,
     onEnd = onEnd,
-    speed = speed
+    speed = speed,
+    colors = colors
   })
 end
 
@@ -126,12 +135,27 @@ local function explode(x, y)
     x = x,
     y = y,
     r = 17,
-    lifespan = 2
+    lifespan = 100,
+    colors = {
+      {pico8Colors.white, pico8Colors.white},
+      {pico8Colors.orange, pico8Colors.yellow},
+      {pico8Colors.yellow, pico8Colors.orange},
+      {pico8Colors.darkGray, pico8Colors.red}
+    }
   })
 
-  explosionCloud(x, y, 6, 2, 13, 1, "return")
-  explosionCloud(x-math.random(5), y-5, 8, 12, 20, 1, "return")
-  explosionCloud(x+math.random(5), y-10, 10, 25, 25, 0.8, "fade")
+  -- explosionCloud(
+  --   x, y, 6, 2, 13, 1, "return",
+  --   {pico8Colors.orange, pico8Colors.yellow}
+  -- )
+  -- explosionCloud(
+  --   x-math.random(5), y-5, 8, 12, 20, 1, "return",
+  --   {pico8Colors.yellow, pico8Colors.orange}
+  -- )
+  -- explosionCloud(
+  --   x+math.random(5), y-10, 10, 25, 25, 0.8, "fade",
+  --   {pico8Colors.darkGray, pico8Colors.lightGray}
+  -- )
 end
 
 local function load()
