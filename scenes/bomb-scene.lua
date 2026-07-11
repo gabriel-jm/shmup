@@ -10,15 +10,16 @@ local function newParticle(props)
     r = props.r or 2,
     originX = props.x,
     originY = props.y,
-    delay = props.delay or nil,
+    delay = props.delay,
     lifespan = props.lifespan or 30,
     maxLifespan = props.lifespan or 30,
-    toX = props.toX or nil,
-    toY = props.toY or nil,
-    toR = props.toR or nil,
+    toX = props.toX,
+    toY = props.toY,
+    toR = props.toR,
     speed = props.speed or 1,
-    onEnd = props.onEnd or nil,
-    colors = props.colors or {{pico8Colors.white, pico8Colors.white}}
+    onEnd = props.onEnd,
+    colors = props.colors or {pico8Colors.white, pico8Colors.white},
+    colorTransition = props.colorTransition
   }
 
   function particle:update()
@@ -48,17 +49,27 @@ local function newParticle(props)
     self.lifespan = self.lifespan - 1
   end
 
+  local function getColors(p)
+    if not p.colorTransition then
+      return p.colors
+    end
+
+    local lifespanPercentage = 1 - p.lifespan / p.maxLifespan
+    local colorIndex = math.floor(
+      math.max(1 + lifespanPercentage * #p.colorTransition, 1)
+    )
+    local colors = p.colorTransition[colorIndex]
+
+    return colors
+  end
+
   function particle:draw()
     if self.delay then
       return
     end
 
     local sx, sy, r = self.x, self.y, self.r
-    local lifespanPercentage = 1 - self.lifespan / self.maxLifespan
-    local colorIndex = math.floor(
-      math.max(lifespanPercentage * (#self.colors + 1), 1)
-    )
-    local colors = self.colors[colorIndex]
+    local colors = getColors(self)
 
     love.graphics.setColor(colors[1])
     love.graphics.circle("fill", sx, sy, math.max(r, 0))
@@ -72,23 +83,19 @@ local function newParticle(props)
 
   function particle:ending(index)
     if self.onEnd == "return" then
-      self.onEnd = nil
       self.lifespan = 10
       self.toR = 0
-
-      return
-    end
-
-    if self.onEnd == "fade" then
-      self.onEnd = nil
-      self.lifespan = 10
+    elseif self.onEnd == "fade" then
+      self.lifespan = 20
       self.toR = 0
       self.speed = self.speed / 2
-
-      return
+      self.colors = self.colorTransition[#self.colorTransition]
+    else
+      table.remove(particles, index)
     end
 
-    table.remove(particles, index)
+    self.colorTransition = nil
+    self.onEnd = nil
   end
 
   table.insert(particles, particle)
@@ -114,7 +121,7 @@ local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd, colors)
       toY = y + pico8Math.cos(currentAngle) * distance,
       onEnd = onEnd,
       speed = speed,
-      colors = colors
+      colorTransition = colors
     })
   end
 
@@ -126,7 +133,7 @@ local function explosionCloud(x, y, toR, delay, lifespan, speed, onEnd, colors)
     lifespan = lifespan,
     onEnd = onEnd,
     speed = speed,
-    colors = colors
+    colorTransition = colors
   })
 end
 
@@ -135,27 +142,36 @@ local function explode(x, y)
     x = x,
     y = y,
     r = 17,
-    lifespan = 100,
-    colors = {
-      {pico8Colors.white, pico8Colors.white},
-      {pico8Colors.orange, pico8Colors.yellow},
-      {pico8Colors.yellow, pico8Colors.orange},
-      {pico8Colors.darkGray, pico8Colors.red}
-    }
+    lifespan = 2,
+    colors = {pico8Colors.yellow, pico8Colors.white}
   })
 
-  -- explosionCloud(
-  --   x, y, 6, 2, 13, 1, "return",
-  --   {pico8Colors.orange, pico8Colors.yellow}
-  -- )
-  -- explosionCloud(
-  --   x-math.random(5), y-5, 8, 12, 20, 1, "return",
-  --   {pico8Colors.yellow, pico8Colors.orange}
-  -- )
-  -- explosionCloud(
-  --   x+math.random(5), y-10, 10, 25, 25, 0.8, "fade",
-  --   {pico8Colors.darkGray, pico8Colors.lightGray}
-  -- )
+  explosionCloud(
+    x, y, 5, 2, 23, 1, "return",
+    {
+      {pico8Colors.yellow, pico8Colors.white},
+      {pico8Colors.orange, pico8Colors.yellow},
+      {pico8Colors.yellow, pico8Colors.orange}
+    }
+  )
+  explosionCloud(
+    x-math.random(5), y-5, 6, 18, 30, 1, "return",
+    {
+      {pico8Colors.yellow, pico8Colors.white},
+      {pico8Colors.orange, pico8Colors.yellow},
+      {pico8Colors.yellow, pico8Colors.orange}
+    }
+  )
+  explosionCloud(
+    x+math.random(5), y-10, 8, 35, 35, 0.8, "fade",
+    {
+      {pico8Colors.yellow, pico8Colors.white},
+      {pico8Colors.yellow, pico8Colors.white},
+      {pico8Colors.yellow, pico8Colors.orange},
+      {pico8Colors.red, pico8Colors.darkGray},
+      {pico8Colors.darkGray, pico8Colors.indigo}
+    }
+  )
 end
 
 local function load()
