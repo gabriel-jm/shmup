@@ -20,8 +20,11 @@ local function newParticle(props)
     radiusSpeed = props.radiusSpeed,
     speed = props.speed or 1,
     onEnd = props.onEnd,
-    colors = props.colors or {pico8Colors.white, pico8Colors.white},
-    colorTransition = props.colorTransition
+    color = props.color,
+    colors = props.colors,
+    colorTransition = props.colorTransition,
+    colorVariation = props.colorVariation or 0,
+    drag = props.drag
   }
 
   function particle:update()
@@ -54,6 +57,11 @@ local function newParticle(props)
       end
     end
 
+    if self.drag then
+      self.sx = self.sx * self.drag
+      self.sy = self.sy * self.drag
+    end
+
     if self.toR then
       self.r = self.r + (self.toR - self.r) / (5 / self.speed)
     end
@@ -65,33 +73,7 @@ local function newParticle(props)
     self.lifespan = self.lifespan - 1
   end
 
-  local function getColors(p)
-    if not p.colorTransition then
-      return p.colors
-    end
-
-    local lifespanPercentage = 1 - p.lifespan / p.maxLifespan
-    local colorIndex = math.floor(
-      math.max(1 + lifespanPercentage * #p.colorTransition, 1)
-    )
-    p.colors = p.colorTransition[colorIndex]
-
-    return p.colors
-  end
-
   function particle:draw()
-    if self.delay then
-      return
-    end
-
-    local sx, sy, r = self.x, self.y, self.r
-    local colors = getColors(self)
-
-    love.graphics.setColor(colors[1])
-    love.graphics.circle("fill", sx, sy, math.max(r, 0))
-
-    love.graphics.setColor(colors[2])
-    love.graphics.circle("fill", sx, sy - 2, math.max(r - 2, 0))
   end
 
   function particle:ending(index)
@@ -114,6 +96,8 @@ local function newParticle(props)
   end
 
   table.insert(particles, particle)
+
+  return particle
 end
 
 local function update()
