@@ -1,16 +1,14 @@
-local sti = require "lib.sti"
+local cartographer = require "lib.cartographer"
 local player = require "player.player"
 local pico8Colors = require "pico8.colors"
 
 local map
-local map2
 local mapBottomPx = 15 * -8
 
 local boss = false
 
 local function load()
-  map = sti("maps/advanced-shmup-map.lua")
-  map2 = sti("maps/advanced-shmup-map.lua")
+  map = cartographer.load("maps/segment-1.lua")
   local mapSegmentsOnScreen = 2
   mapBottomPx = (
     map.height * (map.tileheight - mapSegmentsOnScreen)
@@ -18,7 +16,7 @@ local function load()
   map.x = 0
   map.y = mapBottomPx
 
-  map.layers[1].height = 8
+  -- map:getLayer("Camada de Blocos 1"):draw()
 
   player.load()
 end
@@ -26,11 +24,9 @@ end
 local function update(dt)
   map:update(dt)
 
-  -- if not boss and map.y < 0 then
-  --   map.y = map.y + 0.4
-  -- end
-
-  map.y = map.y + 1
+  if not boss and map.y < 0 then
+    map.y = map.y + 0.4
+  end
 
   map.x = player.getHorizontalScroll()
 
@@ -46,7 +42,13 @@ end
 local function draw()
   love.graphics.clear(pico8Colors.darkPurple)
 
-  map:drawTileLayer("2")
+  love.graphics.push()
+
+    love.graphics.translate(map.x, map.y)
+    -- map:draw()
+    map:getLayer("Camada de Blocos 1"):draw()
+
+  love.graphics.pop()
 
   player.draw()
 end
