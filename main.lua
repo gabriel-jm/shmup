@@ -1,7 +1,7 @@
 require "math.math"
 local push = require "lib.push"
--- local mainScene = require "scenes.main-scene"
-local bombScene = require "scenes.bomb-scene"
+local mainScene = require "scenes.main-scene"
+-- local bombScene = require "scenes.bomb-scene"
 
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
 windowWidth, windowHeight = windowWidth * 0.85, windowHeight * 0.85
@@ -24,7 +24,7 @@ function love.load()
     canvas = true
   })
 
-  Scene = bombScene
+  Scene = mainScene
   Scene.load()
 end
 
@@ -33,7 +33,7 @@ function love.resize(w, h)
 end
 
 function love.update(dt)
-  T = T < 1000 and T + 1 or 0
+  T = T < 9999 and T + 1 or 0
 
   if love.keyboard.isDown("escape") then
     love.event.quit(0)

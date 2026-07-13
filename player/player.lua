@@ -16,6 +16,8 @@ local player = {
 }
 local lastInput = 0
 
+local horizontal = 0
+
 local function updateQuad(position)
   sprite.position = math.clamp(position, -1, 1)
 
@@ -84,6 +86,8 @@ local function update()
 
   bullets.update()
   shipFlames.update()
+
+  horizontal = math.clamp((player.x - 10) / 100, 0, 1) * -16
 end
 
 local function draw()
@@ -92,9 +96,14 @@ local function draw()
   love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
 
   shipFlames.draw(player.x, player.y)
+
+  love.graphics.print(horizontal, 5, 5)
 end
 
 return {
+  getHorizontalScroll = function ()
+    return horizontal
+  end,
   load = load,
   update = update,
   draw = draw
