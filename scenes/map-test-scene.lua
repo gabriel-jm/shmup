@@ -68,55 +68,48 @@ local function newMap(dirPath, fileName)
     end
   end
 
+  local function fillMapBatch(mapx, mapy, mapwidth, mapheight, sx, sy)
+    local startI = mapy * firstLayer.width + mapx
+
+    if mapx > 0 and mapwidth == firstLayer.width then
+      mapwidth = mapwidth - mapx
+    end
+
+    if mapy > 0 and mapheight == firstLayer.height then
+      mapheight = mapheight - mapy
+    end
+
+    local size = mapwidth * mapheight
+
+    for i=0, size-1 do
+      local r = math.floor(i / mapwidth)
+      local c = (i % mapwidth) + 1
+
+      local index = startI + firstLayer.width * r + c
+      local id = firstLayer.data[index]
+      local quad = quads[id]
+
+      local tilex = sx + (c -1) * firstTileset.tilewidth
+      local tiley = sy + r * firstTileset.tileheight
+
+      if tilex < love.graphics.getWidth() and tiley < love.graphics.getHeight() then
+        tilesetBatch:add(quad, tilex, tiley)
+      end
+    end
+  end
+
   function mapData.draw(props)
     tilesetBatch:clear()
 
-    local x = props.screenx or 0
-    local y = props.screeny or 0
+    props = props or {}
+    local mapx = props.mapx or 0
+    local mapy = props.mapy or 0
+    local mapwidth = math.min(firstLayer.width, props.mapwidth or firstLayer.width)
+    local mapheight = math.min(firstLayer.height, props.mapheight or firstLayer.height)
+    local sx = props.screenx or 0
+    local sy = props.screeny or 0
 
-    if props.mapx and props.mapy then
-      local startI = props.mapy * firstLayer.width + (props.mapx + 1)
-      props.mapwidth = math.min(firstLayer.width, props.mapwidth or firstLayer.width)
-      props.mapheight = math.min(firstLayer.height, props.mapheight or firstLayer.height)
-
-      if props.mapx > 0 and props.mapwidth == firstLayer.width then
-        props.mapwidth = props.mapwidth - props.mapx
-      end
-
-      if props.mapy > 0 and props.mapwidth == firstLayer.height then
-        props.mapheight = props.mapheight - props.mapy
-      end
-
-      for h=0, props.mapheight - 1 do
-        for w=0, props.mapwidth - 1 do
-          local index = startI + firstLayer.width * h + w
-          local id = firstLayer.data[index]
-          local quad = quads[id]
-
-          local tilex = x + w * firstTileset.tilewidth
-          local tiley = y + h * firstTileset.tileheight
-
-          if tilex < love.graphics.getWidth() and tiley < love.graphics.getHeight() then
-            tilesetBatch:add(quad, tilex, tiley)
-          end
-        end
-      end
-    else
-      for i=0, #firstLayer.data-1 do
-        local r = math.floor(i / firstLayer.width)
-        local c = (i % firstLayer.width) + 1
-
-        local id = firstLayer.data[c + r * firstLayer.width]
-        local quad = quads[id]
-
-        local tilex = x + (c - 1) * firstTileset.tilewidth
-        local tiley = y + r * firstTileset.tileheight
-
-        if tilex < love.graphics.getWidth() and tiley < love.graphics.getHeight() then
-          tilesetBatch:add(quad, tilex, tiley)
-        end
-      end
-    end
+    fillMapBatch(mapx, mapy, mapwidth, mapheight, sx, sy)
 
     love.graphics.draw(tilesetBatch)
 
@@ -138,14 +131,13 @@ end
 local function draw()
   love.graphics.clear(p8Colors.blue)
 
-  -- 0, 3, 5, 5, 8, 8
   m.draw({
-    screenx = 5,
-    screeny = 5,
-    mapx = 0,
-    mapy = 3,
-    mapwidth = 18,
-    mapheight = 8
+    screenx = 0,
+    screeny = 50,
+    -- mapx = 4,
+    -- mapy = 3,
+    -- mapwidth = 5,
+    -- mapheight = 4
   })
 end
 
