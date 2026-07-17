@@ -1,34 +1,38 @@
-local cartographer = require "lib.cartographer"
 local player = require "player.player"
 local pico8Colors = require "pico8.colors"
+local p8Map = require "pico8.map"
 
-local map
+local map --- @type MapData
+local mapx, mapy = 0, 0
 local mapBottomPx = 15 * -8
 
+local currentSegments = {}
 local boss = false
 
 local function load()
-  map = cartographer.load("maps/segment-1.lua")
+  map = p8Map.newMap("maps", "shmup-map.lua")
   local mapSegmentsOnScreen = 2
   mapBottomPx = (
     map.height * (map.tileheight - mapSegmentsOnScreen)
   ) * -1
-  map.x = 0
-  map.y = mapBottomPx
-
-  -- map:getLayer("Camada de Blocos 1"):draw()
+  mapy = mapBottomPx
 
   player.load()
 end
 
-local function update(dt)
-  map:update(dt)
-
-  if not boss and map.y < 0 then
-    map.y = map.y + 0.4
+local function update()
+  if not boss and mapy < 0 then
+    mapy = mapy + 1
   end
 
-  map.x = player.getHorizontalScroll()
+  mapx = player.getHorizontalScroll()
+
+  if #currentSegments < 1 then
+    table.insert(currentSegments, {
+      mx = 0,
+      my = 0
+    })
+  end
 
   player.update()
 end
@@ -43,13 +47,21 @@ local function draw()
   love.graphics.clear(pico8Colors.darkPurple)
 
   love.graphics.push()
+    love.graphics.translate(0, mapy)
 
-    love.graphics.translate(map.x, map.y)
-    -- map:draw()
-    map:getLayer("Camada de Blocos 1"):draw()
-
+    for _, seg in pairs(currentSegments) do
+      map.draw({
+        screenx = mapx,
+        screeny = 200,
+        mapx = seg.mx,
+        mapy = seg.my,
+        mapwidth = 16,
+        mapheight = 8
+      })
+    end
   love.graphics.pop()
 
+  love.graphics.print("mapy:"..mapy, 5, 12)
   player.draw()
 end
 
