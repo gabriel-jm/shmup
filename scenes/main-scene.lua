@@ -4,33 +4,42 @@ local p8Map = require "pico8.map"
 
 local map --- @type MapData
 local mapx, mapy = 0, 0
-local mapBottomPx = 15 * -8
 
+local mapSegments = {1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3, 2}
+local mapSegIndex = 0
 local currentSegments = {}
 local boss = false
 
 local function load()
   map = p8Map.newMap("maps", "shmup-map.lua")
-  local mapSegmentsOnScreen = 2
-  mapBottomPx = (
-    map.height * (map.tileheight - mapSegmentsOnScreen)
-  ) * -1
-  mapy = mapBottomPx
 
   player.load()
 end
 
 local function update()
-  if not boss and mapy < 0 then
-    mapy = mapy + 1
-  end
-
+  mapy = mapy + 1
   mapx = player.getHorizontalScroll()
 
-  if #currentSegments < 1 then
+  local lastOffset = currentSegments[#currentSegments]
+  if #currentSegments < 1 or mapy - lastOffset.offsetY > 0 then
+    if not boss then
+      mapSegIndex = mapSegIndex + 1
+    end
+
+    local segmentId = mapSegments[mapSegIndex]
+
+    if segmentId == nil then
+      segmentId = mapSegments[1]
+      mapSegIndex = 1
+    end
+
+    local col = math.floor(segmentId / 4) * 18
+    local row = segmentId % 4 * 8
+
     table.insert(currentSegments, {
-      mx = 0,
-      my = 0
+      mx = col,
+      my = row,
+      offsetY = #currentSegments * 64 - 64
     })
   end
 
@@ -46,22 +55,20 @@ end
 local function draw()
   love.graphics.clear(pico8Colors.darkPurple)
 
-  love.graphics.push()
-    love.graphics.translate(0, mapy)
-
-    for _, seg in pairs(currentSegments) do
-      map.draw({
-        screenx = mapx,
-        screeny = 200,
-        mapx = seg.mx,
-        mapy = seg.my,
-        mapwidth = 16,
-        mapheight = 8
-      })
-    end
-  love.graphics.pop()
+  for _, seg in pairs(currentSegments) do
+    map.draw({
+      screenx = mapx,
+      screeny = mapy - seg.offsetY,
+      mapx = seg.mx,
+      mapy = seg.my,
+      mapwidth = 16,
+      mapheight = 8
+    })
+  end
 
   love.graphics.print("mapy:"..mapy, 5, 12)
+  love.graphics.print("#currentSegments:"..#currentSegments, 5, 18)
+  love.graphics.print("boss:"..(boss and "true" or "false"), 5, 24)
   player.draw()
 end
 
