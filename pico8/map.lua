@@ -90,9 +90,7 @@ local function newMap(dirPath, fileName)
       local tilex = sx + (c -1) * firstTileset.tilewidth
       local tiley = sy + r * firstTileset.tileheight
 
-      if tilex < love.graphics.getWidth() and tiley < love.graphics.getHeight() then
-        tilesetBatch:add(quad, tilex, tiley)
-      end
+      tilesetBatch:add(quad, tilex, tiley)
     end
   end
 

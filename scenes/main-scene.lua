@@ -17,11 +17,19 @@ local function load()
 end
 
 local function update()
-  mapy = mapy + 1
+  mapy = mapy + 0.3
   mapx = player.getHorizontalScroll()
 
-  local lastOffset = currentSegments[#currentSegments]
-  if #currentSegments < 1 or mapy - lastOffset.offsetY > 0 then
+  local lastSeg = currentSegments[#currentSegments]
+  if #currentSegments < 1 or mapy - lastSeg.offsetY > 0 then
+    if boss then
+      mapy = mapy - 64
+
+      for _,seg in pairs(currentSegments) do
+        seg.offsetY = seg.offsetY - 64
+      end
+    end
+
     if not boss then
       mapSegIndex = mapSegIndex + 1
     end
@@ -35,12 +43,19 @@ local function update()
 
     local col = math.floor(segmentId / 4) * 18
     local row = segmentId % 4 * 8
+    local nextOffset = #currentSegments < 1
+      and -64
+      or lastSeg.offsetY + 64
 
     table.insert(currentSegments, {
       mx = col,
       my = row,
-      offsetY = #currentSegments * 64 - 64
+      offsetY = nextOffset
     })
+
+    if mapy - currentSegments[1].offsetY >= 128 then
+      table.remove(currentSegments, 1)
+    end
   end
 
   player.update()
