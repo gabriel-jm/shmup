@@ -78,11 +78,9 @@ local function newParticle(props)
 
   function particle:ending(index)
     if self.onEnd == "return" then
-      self.lifespan = 60
       self.toR = nil
       self.radiusSpeed = -0.3
     elseif self.onEnd == "fade" then
-      self.lifespan = 60
       self.toR = nil
       self.radiusSpeed = -0.2 - (math.random(1, 3) / 10)
       self.speed = self.speed / 2
@@ -91,6 +89,7 @@ local function newParticle(props)
       table.remove(particles, index)
     end
 
+    self.lifespan = 32000
     self.colorTransition = nil
     self.onEnd = nil
   end

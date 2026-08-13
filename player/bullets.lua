@@ -7,7 +7,7 @@ local bulletSprites = {
 local shotSfx --- @type love.Source
 local shots = {}
 local shotDelay = 0
-local weapon = 2
+-- local weapon = 2
 
 local function newBullet(props)
   local anim = props.anim or {0}
@@ -81,22 +81,22 @@ local function newBigBullet(props)
   return bullet
 end
 
-local function smallShot(x, y)
-  if shotDelay > 0 or #shots >= 6 then
-    return
-  end
+-- local function smallShot(x, y)
+--   if shotDelay > 0 or #shots >= 6 then
+--     return
+--   end
 
-  shotDelay = 8
-  table.insert(shots, newBullet {
-    x = x + 3,
-    y = y + 2,
-  })
-  table.insert(shots, newBullet {
-    x = x + 9,
-    y = y + 2,
-  })
-  muzzle.muzz()
-end
+--   shotDelay = 8
+--   table.insert(shots, newBullet {
+--     x = x + 3,
+--     y = y + 2,
+--   })
+--   table.insert(shots, newBullet {
+--     x = x + 9,
+--     y = y + 2,
+--   })
+--   muzzle.muzz()
+-- end
 
 local function bigShot(x, y)
   if shotDelay > 0 or #shots >= 20 then
@@ -120,12 +120,12 @@ local function bigShot(x, y)
   shotSfx:clone():play()
 end
 
-local weapons = {smallShot, bigShot}
+-- local weapons = {smallShot, bigShot}
 
-local function shot(x, y)
-  local w = weapons[weapon]
+local function shoot(x, y)
+  -- local w = weapons[weapon]
 
-  w(x, y)
+  bigShot(x, y)
 end
 
 local function load()
@@ -170,7 +170,7 @@ local function draw(playerX, playerY)
 end
 
 return {
-  shot = shot,
+  shoot = shoot,
   load = load,
   update = update,
   draw = draw

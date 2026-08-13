@@ -1,6 +1,8 @@
 local player = require "player.player"
 local pico8Colors = require "pico8.colors"
 local p8Map = require "pico8.map"
+local particles = require "particles.particle"
+local explosion = require "explosion.explosion"
 
 local map --- @type MapData
 local mapx, mapy = 0, 0
@@ -11,13 +13,14 @@ local currentSegments = {}
 local boss = false
 
 local function load()
-  map = p8Map.newMap("maps", "shmup-map.lua")
+  map = p8Map.newMap("maps", "shmup.lua")
 
+  explosion.load()
   player.load()
 end
 
 local function update()
-  mapy = mapy + 0.3
+  mapy = mapy + (4 / 10)
   mapx = player.getHorizontalScroll()
 
   local lastSeg = currentSegments[#currentSegments]
@@ -58,12 +61,17 @@ local function update()
     end
   end
 
+  particles.update()
   player.update()
 end
 
 function love:keypressed(key)
   if key == "z" then
     boss = not boss
+  end
+
+  if key == "c" then
+    explosion.explode(64, 64)
   end
 end
 
@@ -76,7 +84,7 @@ local function draw()
       screeny = mapy - seg.offsetY,
       mapx = seg.mx,
       mapy = seg.my,
-      mapwidth = 16,
+      mapwidth = 18,
       mapheight = 8
     })
   end
@@ -84,6 +92,7 @@ local function draw()
   love.graphics.print("mapy:"..mapy, 5, 12)
   love.graphics.print("#currentSegments:"..#currentSegments, 5, 18)
   love.graphics.print("boss:"..(boss and "true" or "false"), 5, 24)
+  particles.draw()
   player.draw()
 end
 

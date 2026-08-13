@@ -81,7 +81,7 @@ local function update()
   lastInput = input
 
   if love.keyboard.isDown("x") then
-    bullets.shot(player.x, player.y)
+    bullets.shoot(player.x, player.y)
   end
 
   bullets.update()

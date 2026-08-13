@@ -22,7 +22,7 @@ return {
       spacing = 0,
       margin = 0,
       columns = 4,
-      image = "advanced-shmup-tiles.png",
+      image = "test-shmup-tiles.png",
       imagewidth = 32,
       imageheight = 32,
       objectalignment = "unspecified",

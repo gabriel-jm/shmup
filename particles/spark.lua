@@ -9,14 +9,14 @@ local function newSpark(props)
     love.graphics.line(
       self.x,
       self.y,
-      math.floor(self.x - self.sx * 2),
-      math.floor(self.y - self.sy * 2)
+      math.floor(self.x + self.sx * 2),
+      math.floor(self.y + self.sy * 2)
     )
     love.graphics.line(
       self.x + 1,
       self.y,
-      math.floor(self.x - self.sx * 2 + 1),
-      math.floor(self.y - self.sy * 2)
+      math.floor(self.x + self.sx * 2 + 1),
+      math.floor(self.y + self.sy * 2)
     )
   end
 
