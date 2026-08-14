@@ -46,8 +46,8 @@ local function load()
   shipFlames.load()
 end
 
-local dirx = {-1, 1,  0, 0, -0.7,  0.7, 0.7, -0.7}
-local diry = { 0, 0, -1, 1, -0.7, -0.7, 0.7,  0.7}
+local dirx = {0, -1, 1,  0, 0, -0.7,  0.7, 0.7, -0.7}
+local diry = {0,  0, 0, -1, 1, -0.7, -0.7, 0.7,  0.7}
 
 local function update()
   local input = inputCode()
@@ -59,15 +59,13 @@ local function update()
   end
 
   local targetSprite = 0
-  if input > 0 then
-    local dx = dirx[input]
-    local dy = diry[input]
+  local dx = dirx[input]
+  local dy = diry[input]
 
-    player.x = player.x + dx * speed
-    player.y = player.y + dy * speed
+  player.x = player.x + dx * speed
+  player.y = player.y + dy * speed
 
-    targetSprite = math.sign(dx)
-  end
+  targetSprite = math.sign(dx)
 
   local bankingSpeed = 0.25
   local differenceSign = math.sign(targetSprite - sprite.position)

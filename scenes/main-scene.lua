@@ -76,8 +76,6 @@ function love:keypressed(key)
 end
 
 local function draw()
-  love.graphics.clear(pico8Colors.darkPurple)
-
   for _, seg in pairs(currentSegments) do
     map.draw({
       screenx = mapx,

@@ -1,5 +1,3 @@
-local pico8Colors = require "pico8.colors"
-
 local particles = {}
 
 local function newParticle(props)
@@ -115,7 +113,6 @@ local function draw()
   end
 
   love.graphics.setColor(1, 1, 1, 1)
-  love.graphics.print("#particles:"..#particles, 1, 1)
 end
 
 return {
