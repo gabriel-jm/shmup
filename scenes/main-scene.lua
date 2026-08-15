@@ -1,5 +1,4 @@
 local player = require "player.player"
-local pico8Colors = require "pico8.colors"
 local p8Map = require "pico8.map"
 local particles = require "particles.particle"
 local explosion = require "explosion.explosion"
@@ -17,6 +16,13 @@ local function load()
 
   explosion.load()
   player.load()
+end
+
+local function startGame()
+  mapx, mapy = 0, 0
+  mapSegIndex = 0
+  currentSegments = {}
+  boss = false
 end
 
 local function update()

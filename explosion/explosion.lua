@@ -90,7 +90,7 @@ local function explode(x, y)
     0
   )
   explosionCloud(
-    x-math.random(2, 8), y-5, 13, 18, 1, "return",
+    math.random(x-8, x+8), y-5, 13, 18, 1, "return",
     {
       {pico8Colors.yellow, pico8Colors.white},
       {pico8Colors.orange, pico8Colors.yellow},
@@ -99,7 +99,7 @@ local function explode(x, y)
     -0.2
   )
   explosionCloud(
-    x+math.random(2, 8), y-10, 20, 25, 0.8, "fade",
+    math.random(x-8, x+8), y-10, 20, 25, 0.8, "fade",
     {
       {pico8Colors.yellow, pico8Colors.white},
       {pico8Colors.yellow, pico8Colors.orange},
