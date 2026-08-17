@@ -6,13 +6,65 @@ local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
 local sprite = {
   position = 0, -- -1, 0, 1
-  width = 16,
-  height = 16
+  width = 18,
+  height = 18
 }
 local player = {
   x = 64,
   y = 100,
-  speed = 1.4
+  speed = 1.4,
+  offsetX = 8,
+  offsetY = 8
+}
+local sprAnimation = {
+  {
+    sourceX = 0,
+    sourceY = 0,
+    width = 15,
+    height = 18,
+    centerOffsetX = 6,
+    centerOffsetY = 8,
+    quad = {} --- @type love.Quad
+  },
+  {
+    sourceX = 14,
+    sourceY = 0,
+    width = 16,
+    height = 18,
+    centerOffsetX = 6,
+    centerOffsetY = 8,
+    quad = {} --- @type love.Quad
+  },
+  {
+    sourceX = 29,
+    sourceY = 0,
+    width = 9,
+    height = 18,
+    centerOffsetX = 8,
+    centerOffsetY = 8,
+    half = true,
+    quad = {} --- @type love.Quad
+  },
+  {
+    sourceX = 0,
+    sourceY = 0,
+    width = 15,
+    height = 18,
+    centerOffsetX = 8,
+    centerOffsetY = 8,
+    flip = true,
+    quad = {} --- @type love.Quad
+  },
+  {
+    sourceX = 14,
+    sourceY = 0,
+    width = 16,
+    height = 18,
+    centerOffsetX = 6,
+    centerOffsetY = 8,
+    flip = true,
+    quad = {} --- @type love.Quad
+  }
 }
 local lastInput = 0
 
@@ -23,7 +75,7 @@ local function updateQuad(position)
 
   local pos = sprite.position * 2.4 + 2.5
   shipSpriteQuad:setViewport(
-    math.floor(pos) * 16,
+    math.floor(pos) * sprite.width,
     0,
     sprite.width,
     sprite.height,
@@ -35,7 +87,7 @@ end
 local function load()
   fullShipSprite = love.graphics.newImage("assets/sprites/shmupjet.png")
   shipSpriteQuad = love.graphics.newQuad(
-    32,
+    sprite.width * 2,
     0,
     sprite.width,
     sprite.height,
@@ -91,11 +143,21 @@ end
 local function draw()
   bullets.draw(player.x, player.y)
 
-  love.graphics.draw(fullShipSprite, shipSpriteQuad, player.x, player.y)
+  love.graphics.draw(
+    fullShipSprite,
+    shipSpriteQuad,
+    player.x - player.offsetX - math.floor(sprite.position),
+    player.y - player.offsetY
+  )
 
   shipFlames.draw(player.x, player.y)
 
+  love.graphics.setColor(255, 0, 0)
+  love.graphics.points(player.x, player.y)
+
   love.graphics.print(horizontal, 5, 5)
+  love.graphics.print(sprite.position, 5, 10)
+  love.graphics.print(math.floor(sprite.position * 2.4 + 3.5), 5, 16)
 end
 
 return {

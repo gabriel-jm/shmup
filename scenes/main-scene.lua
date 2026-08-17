@@ -93,9 +93,6 @@ local function draw()
     })
   end
 
-  love.graphics.print("mapy:"..mapy, 5, 12)
-  love.graphics.print("#currentSegments:"..#currentSegments, 5, 18)
-  love.graphics.print("boss:"..(boss and "true" or "false"), 5, 24)
   particles.draw()
   player.draw()
 end
