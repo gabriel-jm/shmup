@@ -6,7 +6,7 @@ local explosion = require "explosion.explosion"
 local map --- @type MapData
 local mapx, mapy = 0, 0
 
-local mapSegments = {1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3, 2}
+local mapSegments = {3, 3, 2, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3, 2}
 local mapSegIndex = 0
 local currentSegments = {}
 local boss = false
@@ -62,7 +62,7 @@ local function update()
       offsetY = nextOffset
     })
 
-    if mapy - currentSegments[1].offsetY >= 128 then
+    if #currentSegments > 2 and mapy - currentSegments[1].offsetY >= 128 then
       table.remove(currentSegments, 1)
     end
   end

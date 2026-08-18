@@ -16,56 +16,6 @@ local player = {
   offsetX = 8,
   offsetY = 8
 }
-local sprAnimation = {
-  {
-    sourceX = 0,
-    sourceY = 0,
-    width = 15,
-    height = 18,
-    centerOffsetX = 6,
-    centerOffsetY = 8,
-    quad = {} --- @type love.Quad
-  },
-  {
-    sourceX = 14,
-    sourceY = 0,
-    width = 16,
-    height = 18,
-    centerOffsetX = 6,
-    centerOffsetY = 8,
-    quad = {} --- @type love.Quad
-  },
-  {
-    sourceX = 29,
-    sourceY = 0,
-    width = 9,
-    height = 18,
-    centerOffsetX = 8,
-    centerOffsetY = 8,
-    half = true,
-    quad = {} --- @type love.Quad
-  },
-  {
-    sourceX = 0,
-    sourceY = 0,
-    width = 15,
-    height = 18,
-    centerOffsetX = 8,
-    centerOffsetY = 8,
-    flip = true,
-    quad = {} --- @type love.Quad
-  },
-  {
-    sourceX = 14,
-    sourceY = 0,
-    width = 16,
-    height = 18,
-    centerOffsetX = 6,
-    centerOffsetY = 8,
-    flip = true,
-    quad = {} --- @type love.Quad
-  }
-}
 local lastInput = 0
 
 local horizontal = 0
@@ -137,7 +87,7 @@ local function update()
   bullets.update()
   shipFlames.update()
 
-  horizontal = math.clamp((player.x - 10) / 100, 0, 1) * -16
+  horizontal = math.clamp((player.x - 10) / 108, 0, 1) * -16
 end
 
 local function draw()
@@ -151,13 +101,6 @@ local function draw()
   )
 
   shipFlames.draw(player.x, player.y)
-
-  love.graphics.setColor(255, 0, 0)
-  love.graphics.points(player.x, player.y)
-
-  love.graphics.print(horizontal, 5, 5)
-  love.graphics.print(sprite.position, 5, 10)
-  love.graphics.print(math.floor(sprite.position * 2.4 + 3.5), 5, 16)
 end
 
 return {
