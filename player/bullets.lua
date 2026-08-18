@@ -73,8 +73,8 @@ local function newBigBullet(props)
     love.graphics.draw(
       bulletSprites.big,
       self.quad,
-      self.x,
-      self.y
+      self.x - 7,
+      self.y - 10
     )
   end
 

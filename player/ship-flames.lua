@@ -29,8 +29,8 @@ local function update()
 end
 
 local function draw(playerX, playerY)
-  love.graphics.draw(shipFlameSprite, shipFlameQuad, playerX + 4, playerY + 16)
-  love.graphics.draw(shipFlameSprite, shipFlameQuad, playerX + 7, playerY + 16)
+  love.graphics.draw(shipFlameSprite, shipFlameQuad, playerX - 3, playerY + 8)
+  love.graphics.draw(shipFlameSprite, shipFlameQuad, playerX , playerY + 8)
 end
 
 return {

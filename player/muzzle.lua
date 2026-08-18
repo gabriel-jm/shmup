@@ -52,8 +52,8 @@ end
 
 local function draw(playerX, playerY)
   for _,m in pairs(muzzles) do
-    love.graphics.draw(muzzleSprite, m.quad, playerX - 4, playerY - 7)
-    love.graphics.draw(muzzleSprite, m.quad, playerX + 4, playerY - 7)
+    love.graphics.draw(muzzleSprite, m.quad, playerX - 12, playerY - 18)
+    love.graphics.draw(muzzleSprite, m.quad, playerX - 2, playerY - 18)
   end
 end
 
