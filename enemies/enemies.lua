@@ -1,3 +1,5 @@
+local behaviors = require "enemies.enemy-behavior"
+
 local enemies = {}
 local popcornEnemySprite
 local popcornEnemyQuads = {}
@@ -26,21 +28,36 @@ local function add(props)
     animProgress = 1,
     offsetX = 8,
     offsetY = 8,
-    speed = { x = 0, y = 1 }
+    speed = { x = 0, y = 0 },
+    lifespan = props.lifespan or 0,
+    behavior = behaviors.flyInAndOut
   }
 
   table.insert(enemies, enemy)
 end
 
 local function update()
-  for _,e in pairs(enemies) do
+  for i,e in pairs(enemies) do
+    if e.behavior then
+      e:behavior()
+    end
+
+    -- moviment
     e.x = e.x + e.speed.x
     e.y = e.y + e.speed.y
 
+    -- animation
     e.animProgress = e.animProgress + 1 / 10
 
     if math.floor(e.animProgress) > #e.animation then
       e.animProgress = 1
+    end
+
+    -- aging
+    e.lifespan = e.lifespan + 1
+
+    if e.dead then
+      table.remove(enemies, i)
     end
   end
 end
@@ -49,15 +66,16 @@ local function draw(xscroll)
   for _,e in pairs(enemies) do
     local quadIndex = e.animation[math.floor(e.animProgress)]
     local quad = popcornEnemyQuads[quadIndex]
-    
+
     love.graphics.draw(
       popcornEnemySprite,
       quad,
       (e.x - e.offsetX) + xscroll,
       e.y - e.offsetY
     )
-    love.graphics.points(e.x + xscroll, e.y)
   end
+
+  love.graphics.print("#enemies:"..#enemies, 5, 5)
 end
 
 return {

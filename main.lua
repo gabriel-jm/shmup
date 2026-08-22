@@ -1,7 +1,7 @@
 require "math.math"
 local push = require "lib.push"
-local startMenuScene = require "scenes.start-menu-scene"
--- local mainScene = require "scenes.main-scene"
+-- local startMenuScene = require "scenes.start-menu-scene"
+local mainScene = require "scenes.main-scene"
 -- local bombScene = require "scenes.bomb-scene"
 
 local windowWidth, windowHeight = love.window.getDesktopDimensions()
@@ -30,7 +30,7 @@ function love.load()
     canvas = true
   })
 
-  SetScene(startMenuScene)
+  SetScene(mainScene)
 end
 
 function love.resize(w, h)

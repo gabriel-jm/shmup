@@ -80,18 +80,18 @@ local function update()
 
   lastInput = input
 
-  if love.keyboard.isDown("x") then
-    bullets.shoot(player.x, player.y)
-  end
-
   bullets.update()
   shipFlames.update()
 
   horizontal = math.clamp((player.x - 10) / 108, 0, 1) * -16
+
+  if love.keyboard.isDown("x") then
+    bullets.shoot(player.x - horizontal, player.y)
+  end
 end
 
 local function draw()
-  bullets.draw(player.x, player.y)
+  bullets.draw(player.x, player.y, horizontal)
 
   love.graphics.draw(
     fullShipSprite,

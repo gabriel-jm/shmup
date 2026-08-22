@@ -3,6 +3,7 @@ local p8Map = require "pico8.map"
 local particles = require "particles.particle"
 local explosion = require "explosion.explosion"
 local enemies = require "enemies.enemies"
+local enemyBullets = require "bullets.enemy-bullets"
 
 local map --- @type MapData
 local mapx, mapy = 0, 0
@@ -16,13 +17,9 @@ local function load()
   map = p8Map.newMap("maps", "shmup.lua")
 
   enemies.load()
+  enemyBullets.load()
   explosion.load()
   player.load()
-
-  enemies.add({
-    x = 20,
-    y = 20
-  })
 end
 
 local function startGame()
@@ -74,7 +71,15 @@ local function update()
     end
   end
 
+  if T%60 == 0 then
+    enemies.add({
+      x = math.random(10, 100),
+      y = math.random(-10, -20)
+    })
+  end
+
   enemies.update()
+  enemyBullets.update()
   particles.update()
   player.update()
 end
@@ -101,9 +106,11 @@ local function draw()
     })
   end
 
-  enemies.draw(player.getHorizontalScroll())
+  local scrollx = player.getHorizontalScroll()
+  enemies.draw(scrollx)
   particles.draw()
   player.draw()
+  enemyBullets.draw(scrollx)
 end
 
 return {

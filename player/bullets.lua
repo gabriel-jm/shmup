@@ -1,102 +1,29 @@
 local muzzle = require "player.muzzle"
+local bullet = require "bullets.bullet"
 
-local bulletSprites = {
-  small = nil,
-  big = nil
-}
+local shotSprite ---@type love.Image
 local shotSfx --- @type love.Source
 local shots = {}
 local shotDelay = 0
--- local weapon = 2
-
-local function newBullet(props)
-  local anim = props.anim or {0}
-  local index = math.floor(T / 4) % #anim + 1
-  local bullet = {
-    x = props.x or 0,
-    y = props.y or 0,
-    sx = props.sx or 0,
-    sy = props.sy or -3,
-    type = props.type or "small",
-    anim = anim,
-    animIndex = index,
-    curAnimPos = index
-  }
-
-  function bullet:animate()
-    if #self.anim == 1 then
-      return
-    end
-
-    self.animIndex = self.animIndex + 0.05
-
-    local animIndex = math.floor(self.animIndex)
-
-    if animIndex > #self.anim then
-      self.animIndex = 1
-      animIndex = 1
-    end
-
-    local newPos = self.anim[animIndex]
-
-    if self.curAnimPos ~= newPos then
-      self.curAnimPos = newPos
-
-      self.quad:setViewport(
-        self.curAnimPos,
-        0,
-        8,
-        16,
-        self.sprite:getWidth(),
-        self.sprite:getHeight()
-      )
-    end
-  end
-
-  function bullet:draw()
-    love.graphics.draw(
-      bulletSprites.small,
-      self.x,
-      self.y
-    )
-  end
-
-  return bullet
-end
 
 local function newBigBullet(props)
-  local bullet = newBullet(props)
-  bullet.sprite = bulletSprites.big
-  bullet.quad = love.graphics.newQuad(0, 0, 8, 16, bullet.sprite)
+  props.anim = {0, 8, 16}
 
-  function bullet:draw()
+  local b = bullet.new(props)
+  b.sprite = shotSprite
+  b.quad = love.graphics.newQuad(0, 0, 8, 16, b.sprite)
+
+  function b:draw(scrollx)
     love.graphics.draw(
-      bulletSprites.big,
+      self.sprite,
       self.quad,
-      self.x - 7,
-      self.y - 10
+      self.x - 7 + scrollx,
+      self.y - 13
     )
   end
 
-  return bullet
+  return b
 end
-
--- local function smallShot(x, y)
---   if shotDelay > 0 or #shots >= 6 then
---     return
---   end
-
---   shotDelay = 8
---   table.insert(shots, newBullet {
---     x = x + 3,
---     y = y + 2,
---   })
---   table.insert(shots, newBullet {
---     x = x + 9,
---     y = y + 2,
---   })
---   muzzle.muzz()
--- end
 
 local function bigShot(x, y)
   if shotDelay > 0 or #shots >= 20 then
@@ -107,33 +34,21 @@ local function bigShot(x, y)
   table.insert(shots, newBigBullet {
     x = x,
     y = y - 6,
-    type = "big",
-    anim = {0, 8, 16}
   })
   table.insert(shots, newBigBullet {
     x = x + 8,
-    y = y - 6,
-    type = "big",
-    anim = {0, 8, 16}
+    y = y - 6
   })
   muzzle.muzz()
   shotSfx:clone():play()
 end
 
--- local weapons = {smallShot, bigShot}
-
 local function shoot(x, y)
-  -- local w = weapons[weapon]
-
   bigShot(x, y)
 end
 
 local function load()
-  local smallBulletSprite = love.graphics.newImage("assets/sprites/bullet.png")
-  bulletSprites.small = smallBulletSprite
-
-  local bigBulletSprite = love.graphics.newImage("assets/sprites/big-bullet.png")
-  bulletSprites.big = bigBulletSprite
+  shotSprite = love.graphics.newImage("assets/sprites/big-bullet.png")
 
   shotSfx = love.audio.newSource("assets/sfx/shot.wav", "static")
   shotSfx:setVolume(0.15)
@@ -161,9 +76,9 @@ local function update()
   end
 end
 
-local function draw(playerX, playerY)
+local function draw(playerX, playerY, scrollx)
   for _,b in pairs(shots) do
-    b:draw()
+    b:draw(scrollx)
   end
 
   muzzle.draw(playerX, playerY)
