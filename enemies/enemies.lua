@@ -1,13 +1,16 @@
 local behaviors = require "enemies.enemy-behavior"
 local collisions = require "collisions.collision"
 local shots = require "player.bullets"
+local p8Colors = require "pico8.colors"
 
 local enemies = {}
 local popcornEnemySprite
 local popcornEnemyQuads = {}
+local flashShader ---@type love.Shader
 
 local function load()
   popcornEnemySprite = love.graphics.newImage("assets/sprites/enemy-popcorn.png")
+  flashShader = love.graphics.newShader("shaders/enemy-flash.fs")
 
   for i=0, 2 do
     local quad = love.graphics.newQuad(
@@ -32,7 +35,8 @@ local function add(props)
     offsetY = 8,
     speed = { x = 0, y = 0 },
     lifespan = props.lifespan or 0,
-    behavior = behaviors.flyInAndOut
+    behavior = behaviors.flyInAndOut,
+    flash = 0
   }
 
   function enemy:colBody()
@@ -64,6 +68,10 @@ local function update(player)
       e.animProgress = 1
     end
 
+    if e.flash > 0 then
+      e.flash = e.flash - 1
+    end
+
     -- aging
     e.lifespan = e.lifespan + 1
 
@@ -72,9 +80,10 @@ local function update(player)
       player.col = true
     end
 
-    for _,s in pairs(shots.list) do
+    for si, s in pairs(shots.list) do
       if collisions.check(eColBody, s:colBody()) then
-        e.dead = true
+        e.flash = 2
+        table.remove(shots.list, si)
       end
     end
 
@@ -89,12 +98,19 @@ local function draw()
     local quadIndex = e.animation[math.floor(e.animProgress)]
     local quad = popcornEnemyQuads[quadIndex]
 
+    if e.flash > 0 then
+      love.graphics.setShader(flashShader)
+      flashShader:send("targetColor", p8Colors.red)
+    end
+
     love.graphics.draw(
       popcornEnemySprite,
       quad,
       (e.x - e.offsetX) + ScrollX,
       e.y - e.offsetY
     )
+
+    love.graphics.setShader()
   end
 
   love.graphics.print("#enemies:"..#enemies, 5, 5)
