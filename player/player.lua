@@ -8,7 +8,6 @@ local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
 
 local lastInput = 0
-local horizontal = 0
 
 local sprite = {
   position = 0, -- -1, 0, 1
@@ -27,7 +26,7 @@ local player = {
 
 function player:colBody()
   return {
-    x = math.floor(self.x - 7) - horizontal,
+    x = math.floor(self.x - 7) - ScrollX,
     y = math.floor(self.y - 7),
     colw = 16,
     colh = 16
@@ -97,10 +96,12 @@ local function update()
   bullets.update()
   shipFlames.update()
 
-  horizontal = math.clamp((player.x - 10) / 108, 0, 1) * -16
+  ScrollX = math.floor(
+    math.clamp((player.x - 10) / 108, 0, 1) * -16
+  )
 
   if love.keyboard.isDown("x") then
-    bullets.shoot(player.x - horizontal, player.y)
+    bullets.shoot(player.x - ScrollX, player.y)
   end
 
   for _,b in pairs(enemyBullets.list) do
@@ -111,7 +112,7 @@ local function update()
 end
 
 local function draw()
-  bullets.draw(player.x, player.y, horizontal)
+  bullets.draw(player.x, player.y)
 
   love.graphics.draw(
     fullShipSprite,
@@ -128,9 +129,6 @@ local function draw()
 end
 
 return {
-  getHorizontalScroll = function ()
-    return horizontal
-  end,
   load = load,
   update = update,
   draw = draw,

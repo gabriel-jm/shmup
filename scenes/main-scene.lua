@@ -5,6 +5,8 @@ local explosion = require "explosion.explosion"
 local enemies = require "enemies.enemies"
 local enemyBullets = require "bullets.enemy-bullets"
 
+ScrollX = 0
+
 local map --- @type MapData
 local mapx, mapy = 0, 0
 
@@ -31,7 +33,7 @@ end
 
 local function update()
   mapy = mapy + (4 / 10)
-  mapx = player.getHorizontalScroll()
+  mapx = ScrollX
 
   local lastSeg = currentSegments[#currentSegments]
   if #currentSegments < 1 or mapy - lastSeg.offsetY > 0 then
@@ -107,11 +109,10 @@ local function draw()
     })
   end
 
-  local scrollx = player.getHorizontalScroll()
-  enemies.draw(scrollx)
+  enemies.draw()
   particles.draw()
   player.draw()
-  enemyBullets.draw(scrollx)
+  enemyBullets.draw()
 end
 
 return {

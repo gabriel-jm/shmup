@@ -84,7 +84,7 @@ local function update(player)
   end
 end
 
-local function draw(xscroll)
+local function draw()
   for _,e in pairs(enemies) do
     local quadIndex = e.animation[math.floor(e.animProgress)]
     local quad = popcornEnemyQuads[quadIndex]
@@ -92,7 +92,7 @@ local function draw(xscroll)
     love.graphics.draw(
       popcornEnemySprite,
       quad,
-      (e.x - e.offsetX) + xscroll,
+      (e.x - e.offsetX) + ScrollX,
       e.y - e.offsetY
     )
   end

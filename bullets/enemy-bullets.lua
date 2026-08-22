@@ -11,12 +11,12 @@ local function enemyBullet(props)
   local b = bullets.new(props)
   b.sprite = bulletSprite
 
-  function b:draw(offx)
+  function b:draw()
     local spr = self.sprite
 
     love.graphics.draw(
       spr,
-      (self.x - 3) + offx,
+      (self.x - 3) + ScrollX,
       self.y - 3
     )
   end

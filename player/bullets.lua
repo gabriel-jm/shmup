@@ -13,11 +13,11 @@ local function newBigBullet(props)
   b.sprite = shotSprite
   b.quad = love.graphics.newQuad(0, 0, 8, 16, b.sprite)
 
-  function b:draw(scrollx)
+  function b:draw()
     love.graphics.draw(
       self.sprite,
       self.quad,
-      self.x - 7 + scrollx,
+      self.x - 7 + ScrollX,
       self.y - 13
     )
   end
@@ -85,9 +85,9 @@ local function update()
   end
 end
 
-local function draw(playerX, playerY, scrollx)
+local function draw(playerX, playerY)
   for _,b in pairs(shots) do
-    b:draw(scrollx)
+    b:draw()
   end
 
   muzzle.draw(playerX, playerY)
