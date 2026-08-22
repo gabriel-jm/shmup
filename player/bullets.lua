@@ -22,6 +22,15 @@ local function newBigBullet(props)
     )
   end
 
+  function b:colBody()
+    return {
+      x = math.floor(self.x - 4),
+      y = math.floor(self.y - 8),
+      colw = 8,
+      colh = 16
+    }
+  end
+
   return b
 end
 
@@ -85,6 +94,7 @@ local function draw(playerX, playerY, scrollx)
 end
 
 return {
+  list = shots,
   shoot = shoot,
   load = load,
   update = update,

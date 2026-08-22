@@ -73,12 +73,13 @@ local function update()
 
   if T%60 == 0 then
     enemies.add({
-      x = math.random(10, 100),
+      x = math.random(10, 124),
       y = math.random(-10, -20)
     })
   end
 
-  enemies.update()
+  player.player.col = false
+  enemies.update(player.player)
   enemyBullets.update()
   particles.update()
   player.update()

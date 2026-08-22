@@ -1,4 +1,6 @@
 local behaviors = require "enemies.enemy-behavior"
+local collisions = require "collisions.collision"
+local shots = require "player.bullets"
 
 local enemies = {}
 local popcornEnemySprite
@@ -33,10 +35,19 @@ local function add(props)
     behavior = behaviors.flyInAndOut
   }
 
+  function enemy:colBody()
+    return {
+      x = math.floor(self.x - 7),
+      y = math.floor(self.y - 7),
+      colw = 16,
+      colh = 16
+    }
+  end
+
   table.insert(enemies, enemy)
 end
 
-local function update()
+local function update(player)
   for i,e in pairs(enemies) do
     if e.behavior then
       e:behavior()
@@ -55,6 +66,17 @@ local function update()
 
     -- aging
     e.lifespan = e.lifespan + 1
+
+    local eColBody = e:colBody()
+    if collisions.check(player:colBody(), eColBody) then
+      player.col = true
+    end
+
+    for _,s in pairs(shots.list) do
+      if collisions.check(eColBody, s:colBody()) then
+        e.dead = true
+      end
+    end
 
     if e.dead then
       table.remove(enemies, i)

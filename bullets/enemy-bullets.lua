@@ -21,6 +21,15 @@ local function enemyBullet(props)
     )
   end
 
+  function b:colBody()
+    return {
+      x = math.floor(self.x - 3),
+      y = math.floor(self.y - 3),
+      colw = 7,
+      colh = 7
+    }
+  end
+
   return b
 end
 
@@ -48,6 +57,7 @@ local function draw(x, y)
 end
 
 return {
+  list = enemyBullets,
   load = load,
   add = add,
   update = update,

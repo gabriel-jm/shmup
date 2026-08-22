@@ -1,9 +1,15 @@
 local inputCode = require "player.input"
 local bullets = require "player.bullets"
 local shipFlames = require "player.ship-flames"
+local collisions = require "collisions.collision"
+local enemyBullets = require "bullets.enemy-bullets"
 
 local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
+
+local lastInput = 0
+local horizontal = 0
+
 local sprite = {
   position = 0, -- -1, 0, 1
   width = 18,
@@ -14,11 +20,19 @@ local player = {
   y = 100,
   speed = 1.4,
   offsetX = 8,
-  offsetY = 8
+  offsetY = 8,
+  colw = 16,
+  colh = 16
 }
-local lastInput = 0
 
-local horizontal = 0
+function player:colBody()
+  return {
+    x = math.floor(self.x - 7) - horizontal,
+    y = math.floor(self.y - 7),
+    colw = 16,
+    colh = 16
+  }
+end
 
 local function updateQuad(position)
   sprite.position = math.clamp(position, -1, 1)
@@ -88,6 +102,12 @@ local function update()
   if love.keyboard.isDown("x") then
     bullets.shoot(player.x - horizontal, player.y)
   end
+
+  for _,b in pairs(enemyBullets.list) do
+    if collisions.check(player:colBody(), b:colBody()) then
+      player.col = true
+    end
+  end
 end
 
 local function draw()
@@ -101,6 +121,10 @@ local function draw()
   )
 
   shipFlames.draw(player.x, player.y)
+
+  if player.col then
+    love.graphics.rectangle("line", player.x - 7, player.y - 7, 16, 16)
+  end
 end
 
 return {
@@ -109,5 +133,6 @@ return {
   end,
   load = load,
   update = update,
-  draw = draw
+  draw = draw,
+  player = player
 }
