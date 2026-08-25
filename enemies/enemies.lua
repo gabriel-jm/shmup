@@ -82,7 +82,7 @@ local function update(player)
 
     for si, s in pairs(shots.list) do
       if collisions.check(eColBody, s:colBody()) then
-        e.flash = 2
+        e.flash = 4
         table.remove(shots.list, si)
       end
     end
@@ -100,7 +100,7 @@ local function draw()
 
     if e.flash > 0 then
       love.graphics.setShader(flashShader)
-      flashShader:send("targetColor", p8Colors.red)
+      flashShader:send("pink", p8Colors.pink)
     end
 
     love.graphics.draw(
