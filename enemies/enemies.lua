@@ -2,6 +2,7 @@ local behaviors = require "enemies.enemy-behavior"
 local collisions = require "collisions.collision"
 local shots = require "player.bullets"
 local p8Colors = require "pico8.colors"
+local explosion = require "explosion.explosion"
 
 local enemies = {}
 local popcornEnemySprite
@@ -36,7 +37,8 @@ local function add(props)
     speed = { x = 0, y = 0 },
     lifespan = props.lifespan or 0,
     behavior = behaviors.flyInAndOut,
-    flash = 0
+    flash = 0,
+    hp = 20
   }
 
   function enemy:colBody()
@@ -82,9 +84,15 @@ local function update(player)
 
     for si, s in pairs(shots.list) do
       if collisions.check(eColBody, s:colBody()) then
-        e.flash = 4
+        e.flash = 3
+        e.hp = e.hp - 1
         s:onHit(si)
       end
+    end
+
+    if e.hp <= 0 then
+      table.remove(enemies, i)
+      explosion.explode(e.x - 6, e.y)
     end
 
     if e.dead then

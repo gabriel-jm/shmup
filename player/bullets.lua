@@ -41,11 +41,11 @@ local function newBigBullet(props)
 end
 
 local function bigShot(x, y)
-  if shotDelay > 0 or #shots >= 20 then
+  if shotDelay > 0 or #shots >= 30 then
     return
   end
 
-  shotDelay = 6
+  shotDelay = 5
   table.insert(shots, newBigBullet {
     x = x,
     y = y - 6,

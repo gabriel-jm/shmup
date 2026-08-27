@@ -1,7 +1,7 @@
 local enemyBullets = require "bullets.enemy-bullets"
 
 local function flyInAndOut(e)
-  if e.lifespan < 20 then
+  if e.lifespan < 30 then
     e.speed.y = 1.5
   elseif e.lifespan == 60 then
     enemyBullets.add({
