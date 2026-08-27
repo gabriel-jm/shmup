@@ -83,7 +83,7 @@ local function update(player)
     for si, s in pairs(shots.list) do
       if collisions.check(eColBody, s:colBody()) then
         e.flash = 4
-        table.remove(shots.list, si)
+        s:onHit(si)
       end
     end
 

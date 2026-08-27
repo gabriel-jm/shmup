@@ -1,5 +1,6 @@
 local muzzle = require "player.muzzle"
 local bullet = require "bullets.bullet"
+local shotSplash = require "player.shot-splash"
 
 local shotSprite ---@type love.Image
 local shotSfx --- @type love.Source
@@ -29,6 +30,11 @@ local function newBigBullet(props)
       colw = 8,
       colh = 16
     }
+  end
+
+  function b:onHit(i)
+    shotSplash.add(self.x, self.y)
+    table.remove(shots, i)
   end
 
   return b
@@ -63,6 +69,7 @@ local function load()
   shotSfx:setVolume(0.15)
   shotSfx:setPitch(0.6)
 
+  shotSplash.load()
   muzzle.load()
 end
 
@@ -83,9 +90,13 @@ local function update()
       table.remove(shots, i)
     end
   end
+
+  shotSplash.update()
 end
 
 local function draw(playerX, playerY)
+  shotSplash.draw()
+
   for _,b in pairs(shots) do
     b:draw()
   end
