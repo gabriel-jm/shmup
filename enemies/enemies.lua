@@ -11,7 +11,7 @@ local flashShader ---@type love.Shader
 
 local function load()
   popcornEnemySprite = love.graphics.newImage("assets/sprites/enemy-popcorn.png")
-  flashShader = love.graphics.newShader("shaders/enemy-flash.fs")
+  flashShader = love.graphics.newShader("enemies/shaders/enemy-flash.fs")
 
   for i=0, 2 do
     local quad = love.graphics.newQuad(
@@ -38,7 +38,7 @@ local function add(props)
     lifespan = props.lifespan or 0,
     behavior = behaviors.flyInAndOut,
     flash = 0,
-    hp = 20
+    hp = 12
   }
 
   function enemy:colBody()
