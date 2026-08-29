@@ -23,7 +23,7 @@ local function newBigBullet(props)
     )
   end
 
-  function b:colBody()
+  function b:col()
     return {
       x = math.floor(self.x - 4),
       y = math.floor(self.y - 8),

@@ -21,7 +21,7 @@ local function enemyBullet(props)
     )
   end
 
-  function b:colBody()
+  function b:col()
     return {
       x = math.floor(self.x - 3),
       y = math.floor(self.y - 3),

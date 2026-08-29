@@ -20,11 +20,9 @@ local player = {
   speed = 1.4,
   offsetX = 8,
   offsetY = 8,
-  colw = 16,
-  colh = 16
 }
 
-function player:colBody()
+function player:col()
   return {
     x = math.floor(self.x - 7) - ScrollX,
     y = math.floor(self.y - 7),
@@ -65,6 +63,7 @@ local dirx = {0, -1, 1,  0, 0, -0.7,  0.7, 0.7, -0.7}
 local diry = {0,  0, 0, -1, 1, -0.7, -0.7, 0.7,  0.7}
 
 local function update()
+  player.hit = false
   local input = inputCode()
   local speed = player.speed
 
@@ -105,8 +104,8 @@ local function update()
   end
 
   for _,b in pairs(enemyBullets.list) do
-    if collisions.check(player:colBody(), b:colBody()) then
-      player.col = true
+    if collisions.check(player, b) then
+      player.hit = true
     end
   end
 end
@@ -123,7 +122,7 @@ local function draw()
 
   shipFlames.draw(player.x, player.y)
 
-  if player.col then
+  if player.hit then
     love.graphics.rectangle("line", player.x - 7, player.y - 7, 16, 16)
   end
 end

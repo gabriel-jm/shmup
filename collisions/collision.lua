@@ -1,4 +1,6 @@
-local function checkCollision(a, b)
+local function checkCollision(oa, ob)
+  local a, b = oa:col(), ob:col()
+
   local aLeft = a.x
   local aTop = a.y
   local aRight = a.x + a.colw - 1

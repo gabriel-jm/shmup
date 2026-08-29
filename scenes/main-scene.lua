@@ -80,7 +80,6 @@ local function update()
     })
   end
 
-  player.player.col = false
   enemies.update(player.player)
   enemyBullets.update()
   particles.update()

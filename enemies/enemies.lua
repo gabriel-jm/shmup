@@ -41,7 +41,7 @@ local function add(props)
     hp = 12
   }
 
-  function enemy:colBody()
+  function enemy:col()
     return {
       x = math.floor(self.x - 7),
       y = math.floor(self.y - 7),
@@ -77,13 +77,12 @@ local function update(player)
     -- aging
     e.lifespan = e.lifespan + 1
 
-    local eColBody = e:colBody()
-    if collisions.check(player:colBody(), eColBody) then
+    if collisions.check(player, e) then
       player.col = true
     end
 
     for si, s in pairs(shots.list) do
-      if collisions.check(eColBody, s:colBody()) then
+      if collisions.check(e, s) then
         e.flash = 3
         e.hp = e.hp - 1
         s:onHit(si)
