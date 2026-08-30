@@ -32,6 +32,7 @@ local function startGame()
 end
 
 local function update()
+  player.player.hit = false
   mapy = mapy + (4 / 10)
   mapx = ScrollX
 

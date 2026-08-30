@@ -43,10 +43,10 @@ local function add(props)
 
   function enemy:col()
     return {
-      x = math.floor(self.x - 7),
-      y = math.floor(self.y - 7),
-      colw = 16,
-      colh = 16
+      x = math.floor(self.x - 6),
+      y = math.floor(self.y - 6),
+      colw = 14,
+      colh = 14
     }
   end
 
@@ -78,7 +78,7 @@ local function update(player)
     e.lifespan = e.lifespan + 1
 
     if collisions.check(player, e) then
-      player.col = true
+      player.hit = true
     end
 
     for si, s in pairs(shots.list) do

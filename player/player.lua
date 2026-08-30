@@ -24,10 +24,10 @@ local player = {
 
 function player:col()
   return {
-    x = math.floor(self.x - 7) - ScrollX,
-    y = math.floor(self.y - 7),
-    colw = 16,
-    colh = 16
+    x = math.floor(self.x) - ScrollX,
+    y = math.floor(self.y),
+    colw = 3,
+    colh = 3
   }
 end
 
@@ -63,7 +63,6 @@ local dirx = {0, -1, 1,  0, 0, -0.7,  0.7, 0.7, -0.7}
 local diry = {0,  0, 0, -1, 1, -0.7, -0.7, 0.7,  0.7}
 
 local function update()
-  player.hit = false
   local input = inputCode()
   local speed = player.speed
 
@@ -123,7 +122,8 @@ local function draw()
   shipFlames.draw(player.x, player.y)
 
   if player.hit then
-    love.graphics.rectangle("line", player.x - 7, player.y - 7, 16, 16)
+    local pcol = player:col()
+    love.graphics.rectangle("line", pcol.x + ScrollX, pcol.y, pcol.colw, pcol.colh)
   end
 end
 
