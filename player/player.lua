@@ -3,6 +3,7 @@ local bullets = require "player.bullets"
 local shipFlames = require "player.ship-flames"
 local collisions = require "collisions.collision"
 local enemyBullets = require "bullets.enemy-bullets"
+local explosions = require "explosion.explosion"
 
 local shipSpriteQuad --- @type love.Quad
 local fullShipSprite --- @type love.Image
@@ -20,6 +21,7 @@ local player = {
   speed = 1.4,
   offsetX = 8,
   offsetY = 8,
+  invul = 0
 }
 
 function player:col()
@@ -29,6 +31,10 @@ function player:col()
     colw = 3,
     colh = 3
   }
+end
+
+function player:die()
+  explosions.explode(self.x, self.y)
 end
 
 local function updateQuad(position)
@@ -57,6 +63,23 @@ local function load()
 
   bullets.load()
   shipFlames.load()
+end
+
+local function checkCollision()
+  if player.invul > 0 then
+    player.invul = player.invul - 1
+    return
+  end
+
+  for _,b in pairs(enemyBullets.list) do
+    if collisions.check(player, b) then
+      -- player.hit = true
+      Freeze(18, function ()
+        player:die()
+        player.invul = 120
+      end)
+    end
+  end
 end
 
 local dirx = {0, -1, 1,  0, 0, -0.7,  0.7, 0.7, -0.7}
@@ -102,24 +125,22 @@ local function update()
     bullets.shoot(player.x - ScrollX, player.y)
   end
 
-  for _,b in pairs(enemyBullets.list) do
-    if collisions.check(player, b) then
-      player.hit = true
-    end
-  end
+  checkCollision()
 end
 
 local function draw()
   bullets.draw(player.x, player.y)
 
-  love.graphics.draw(
-    fullShipSprite,
-    shipSpriteQuad,
-    player.x - player.offsetX - math.floor(sprite.position),
-    player.y - player.offsetY
-  )
+  if player.invul <= 0 or T%4 == 0 then
+    love.graphics.draw(
+      fullShipSprite,
+      shipSpriteQuad,
+      player.x - player.offsetX - math.floor(sprite.position),
+      math.floor(player.y - player.offsetY)
+    )
 
-  shipFlames.draw(player.x, player.y)
+    shipFlames.draw(player.x, player.y)
+  end
 
   if player.hit then
     local pcol = player:col()

@@ -9,7 +9,7 @@ local function flyInAndOut(e)
       y = e.y,
       sy = 1
     })
-  elseif e.lifespan < 120 then
+  elseif e.lifespan < 140 then
     e.speed.y = math.max(0, e.speed.y - 0.03)
   else
     e.speed.y = e.speed.y - 0.04

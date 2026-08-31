@@ -4,6 +4,7 @@ local particles = require "particles.particle"
 local explosion = require "explosion.explosion"
 local enemies = require "enemies.enemies"
 local enemyBullets = require "bullets.enemy-bullets"
+local schedule = require "enemies.schedule"
 
 ScrollX = 0
 
@@ -74,12 +75,14 @@ local function update()
     end
   end
 
-  if T%60 == 0 then
-    enemies.add({
-      x = math.random(10, 124),
-      y = math.random(-10, -20)
-    })
-  end
+  -- if T%60 == 0 then
+  --   enemies.add({
+  --     x = math.random(10, 124),
+  --     y = math.random(-10, -20)
+  --   })
+  -- end
+
+  schedule.update(mapy)
 
   enemies.update(player.player)
   enemyBullets.update()
@@ -113,6 +116,7 @@ local function draw()
   particles.draw()
   player.draw()
   enemyBullets.draw()
+  love.graphics.print("mapy:"..mapy, 5, 15)
 end
 
 return {

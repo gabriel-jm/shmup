@@ -11,6 +11,15 @@ local targetWidth, targetHeight = 128, 128
 math.randomseed(os.time())
 
 Scene = {}
+local freeze = {
+  t = 0,
+  cb = nil
+}
+
+function Freeze(time, cb)
+  freeze.t = time
+  freeze.cb = cb
+end
 
 function SetScene(newScene)
   Scene = newScene
@@ -44,7 +53,16 @@ function love.update(dt)
     love.event.quit(0)
   end
 
-  Scene.update(dt)
+  if freeze.t > 0 then
+    freeze.t = freeze.t - 1
+
+    if freeze.t == 0 then
+      freeze.cb()
+      freeze.cb = nil
+    end
+  else
+    Scene.update(dt)
+  end
 end
 
 function love.draw()
