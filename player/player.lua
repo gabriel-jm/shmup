@@ -33,6 +33,18 @@ function player:col()
   }
 end
 
+function player:onHit()
+  if self.invul > 0 then
+    return
+  end
+
+  self.invul = 150
+
+  Freeze(18, function ()
+    self:die()
+  end)
+end
+
 function player:die()
   explosions.explode(self.x, self.y)
 end
@@ -73,11 +85,7 @@ local function checkCollision()
 
   for _,b in pairs(enemyBullets.list) do
     if collisions.check(player, b) then
-      -- player.hit = true
-      Freeze(18, function ()
-        player:die()
-        player.invul = 120
-      end)
+      player:onHit()
     end
   end
 end

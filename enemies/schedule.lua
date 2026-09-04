@@ -1,11 +1,42 @@
 local enemies = require "enemies.enemies"
 
 local schedule = {
+  -- {
+  --   scroll = 100,
+  --   enemy = 1,
+  --   x = 75,
+  --   y = -20
+  -- },
+  -- {
+  --   scroll = 100,
+  --   enemy = 1,
+  --   x = 60,
+  --   y = -30
+  -- },
+  -- {
+  --   scroll = 100,
+  --   enemy = 1,
+  --   x = 90,
+  --   y = -30
+  -- },
+  -- {
+  --   scroll = 100,
+  --   enemy = 1,
+  --   x = 40,
+  --   y = -40
+  -- },
+  -- {
+  --   scroll = 100,
+  --   enemy = 1,
+  --   x = 110,
+  --   y = -40
+  -- }
+
   {
-    scroll = 100,
+    scroll = 60,
     enemy = 1,
-    x = 40,
-    y = -20
+    x = 50,
+    y = 0
   }
 }
 local index = 1

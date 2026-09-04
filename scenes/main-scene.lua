@@ -70,17 +70,10 @@ local function update()
       offsetY = nextOffset
     })
 
-    if #currentSegments > 2 and mapy - currentSegments[1].offsetY >= 128 then
+    if #currentSegments > 3 then
       table.remove(currentSegments, 1)
     end
   end
-
-  -- if T%60 == 0 then
-  --   enemies.add({
-  --     x = math.random(10, 124),
-  --     y = math.random(-10, -20)
-  --   })
-  -- end
 
   schedule.update(mapy)
 

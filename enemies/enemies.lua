@@ -2,6 +2,7 @@ local behaviors = require "enemies.enemy-behavior"
 local collisions = require "collisions.collision"
 local shots = require "player.bullets"
 local p8Colors = require "pico8.colors"
+local p8Math = require "pico8.math"
 local explosion = require "explosion.explosion"
 
 local enemies = {}
@@ -34,10 +35,15 @@ local function add(props)
     animProgress = 1,
     offsetX = 8,
     offsetY = 8,
-    speed = { x = 0, y = 0 },
+    sx = 0,
+    sy = 0,
+    angle = 0,
+    speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.flyInAndOut,
+    behavior = behaviors.first,
+    behaviorIndex = 1,
     flash = 0,
+    wait = 0,
     hp = 12
   }
 
@@ -53,15 +59,31 @@ local function add(props)
   table.insert(enemies, enemy)
 end
 
+local function behave(e)
+  if e.wait > 0 then
+    e.wait = e.wait - 1
+    return
+  end
+
+  if e.behavior and e.behaviorIndex <= #e.behavior then
+    local beh = e.behavior[e.behaviorIndex]
+    if beh then
+      beh(e)
+      e.behaviorIndex = e.behaviorIndex + 1
+    end
+  end
+end
+
 local function update(player)
   for i,e in pairs(enemies) do
-    if e.behavior then
-      e:behavior()
-    end
+    behave(e)
 
     -- moviment
-    e.x = e.x + e.speed.x
-    e.y = e.y + e.speed.y
+    e.sx = p8Math.sin(e.angle) * e.speed
+    e.sy = p8Math.cos(e.angle) * e.speed
+
+    e.x = e.x + e.sx
+    e.y = e.y + e.sy
 
     -- animation
     e.animProgress = e.animProgress + 1 / 10
@@ -78,7 +100,7 @@ local function update(player)
     e.lifespan = e.lifespan + 1
 
     if collisions.check(player, e) then
-      player.hit = true
+      player:onHit()
     end
 
     for si, s in pairs(shots.list) do
@@ -120,7 +142,9 @@ local function draw()
     love.graphics.setShader()
   end
 
-  love.graphics.print("#enemies:"..#enemies, 5, 5)
+  if #enemies > 0 then
+    love.graphics.print("behavior:"..enemies[1].behaviorIndex, 5, 5)
+  end
 end
 
 return {
