@@ -20,21 +20,27 @@ local function flyInAndOut(e)
   end
 end
 
-local function heading(angle, speed, waitFrames)
+local function heading(angle, speed, duration)
   return function (en)
     en.angle = angle
     en.speed = speed
 
-    if waitFrames then
-      en.wait = waitFrames
+    if duration then
+      en.wait = duration
     end
   end
 end
 
+local function animationSpeed(value, target)
+  return function (en)
+    en.aniSpeed = value
+    en.aniSpeedTarget = target
+  end
+end
+
 local behaviors = {
-  heading(0.1, 0.4, 20),
-  heading(-0.1, 1, 30),
-  heading(0, 0.4)
+  heading(0, 1, 50),
+  animationSpeed(-0.02, 0)
 }
 
 return {

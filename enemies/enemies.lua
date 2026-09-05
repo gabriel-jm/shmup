@@ -72,6 +72,14 @@ local function behave(e)
       e.behaviorIndex = e.behaviorIndex + 1
     end
   end
+
+  if e.aniSpeedTarget then
+    e.speed = e.speed + e.aniSpeed
+    if math.abs(e.aniSpeedTarget - e.speed) < math.abs(e.aniSpeed) then
+      e.speed = e.aniSpeedTarget
+      e.aniSpeedTarget = nil
+    end
+  end
 end
 
 local function update(player)
