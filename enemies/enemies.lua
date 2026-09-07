@@ -40,10 +40,11 @@ local function add(props)
     angle = 0,
     speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.first,
+    behavior = behaviors.behaviors.flyIn,
     behaviorIndex = 1,
     flash = 0,
     wait = 0,
+    dist = 0,
     hp = 12
   }
 
@@ -65,11 +66,15 @@ local function behave(e)
     return
   end
 
-  if e.behavior and e.behaviorIndex <= #e.behavior then
+  if e.dist > 0 then
+    return
+  end
+
+  if e.behavior and e.behavior[e.behaviorIndex] then
     local beh = e.behavior[e.behaviorIndex]
     if beh then
-      beh(e)
       e.behaviorIndex = e.behaviorIndex + 1
+      beh(e)
     end
   end
 
@@ -89,6 +94,7 @@ local function update(player)
     -- moviment
     e.sx = p8Math.sin(e.angle) * e.speed
     e.sy = p8Math.cos(e.angle) * e.speed
+    e.dist = math.max(0, e.dist - math.abs(e.speed))
 
     e.x = e.x + e.sx
     e.y = e.y + e.sy

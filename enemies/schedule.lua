@@ -35,7 +35,7 @@ local schedule = {
   {
     scroll = 60,
     enemy = 1,
-    x = 50,
+    x = 70,
     y = 0
   }
 }

@@ -1,5 +1,7 @@
 local enemyBullets = require "bullets.enemy-bullets"
 
+local behaviors = {}
+
 local function flyInAndOut(e)
   if e.lifespan < 30 then
     e.speed.y = 1.4
@@ -20,30 +22,61 @@ local function flyInAndOut(e)
   end
 end
 
-local function heading(angle, speed, duration)
+local function heading(angle, speed)
   return function (en)
     en.angle = angle
     en.speed = speed
-
-    if duration then
-      en.wait = duration
-    end
+    en.aniSpeedTarget = nil
   end
 end
 
-local function animationSpeed(value, target)
+local function wait(duration)
+  return function (en)
+    en.wait = duration
+  end
+end
+
+local function animationSpeed(target, value)
   return function (en)
     en.aniSpeed = value
     en.aniSpeedTarget = target
   end
 end
 
-local behaviors = {
-  heading(0, 1, 50),
-  animationSpeed(-0.02, 0)
+local function distance(px)
+  return function (en)
+    en.dist = px
+  end
+end
+
+local function changeBehavior(name, index)
+  return function (en)
+    if not behaviors[name] then
+      return
+    end
+
+    en.behavior = behaviors[name]
+    en.behaviorIndex = index or 1
+  end
+end
+
+behaviors = {
+  flyIn = {
+    heading(0, 0.5),
+    distance(20),
+    animationSpeed(-0.02, 0),
+    changeBehavior("fromRight")
+  },
+  fromRight = {
+    heading(-0.25, 2),
+    animationSpeed(0.35, -0.05),
+    distance(45),
+    heading(-0.9, -0.3),
+    animationSpeed(2, 0.05)
+  }
 }
 
 return {
   flyInAndOut = flyInAndOut,
-  first = behaviors
+  behaviors = behaviors
 }
