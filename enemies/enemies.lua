@@ -4,6 +4,7 @@ local shots = require "player.bullets"
 local p8Colors = require "pico8.colors"
 local p8Math = require "pico8.math"
 local explosion = require "explosion.explosion"
+local enemyBullets = require "bullets.enemy-bullets"
 
 local enemies = {}
 local popcornEnemySprite
@@ -40,7 +41,7 @@ local function add(props)
     angle = 0,
     speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.behaviors.flyIn,
+    behavior = behaviors.behaviors.turnAround,
     behaviorIndex = 1,
     flash = 0,
     wait = 0,
@@ -55,6 +56,14 @@ local function add(props)
       colw = 14,
       colh = 14
     }
+  end
+
+  function enemy:shoot()
+    enemyBullets.add({
+      x = self.x,
+      y = self.y,
+      sy = 1.2
+    })
   end
 
   table.insert(enemies, enemy)
@@ -85,6 +94,14 @@ local function behave(e)
       e.aniSpeedTarget = nil
     end
   end
+
+  if e.aniDirTarget then
+    e.angle = e.angle + e.aniDirSpeed
+    if math.abs(e.aniDirTarget - e.angle) < math.abs(e.aniDirSpeed) then
+      e.angle = e.aniDirTarget
+      e.aniDirTarget = nil
+    end
+  end
 end
 
 local function update(player)
@@ -92,8 +109,8 @@ local function update(player)
     behave(e)
 
     -- moviment
-    e.sx = p8Math.sin(e.angle) * e.speed
-    e.sy = p8Math.cos(e.angle) * e.speed
+    e.sx = -p8Math.sin(e.angle) * e.speed
+    e.sy = -p8Math.cos(e.angle) * e.speed
     e.dist = math.max(0, e.dist - math.abs(e.speed))
 
     e.x = e.x + e.sx

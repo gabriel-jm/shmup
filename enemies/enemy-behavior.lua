@@ -36,10 +36,17 @@ local function wait(duration)
   end
 end
 
-local function animationSpeed(target, value)
+local function animationSpeed(target, speed)
   return function (en)
-    en.aniSpeed = value
+    en.aniSpeed = speed
     en.aniSpeedTarget = target
+  end
+end
+
+local function animateDirection(target, speed)
+  return function (en)
+    en.aniDirTarget = target
+    en.aniDirSpeed = speed
   end
 end
 
@@ -60,9 +67,17 @@ local function changeBehavior(name, index)
   end
 end
 
+local function shoot()
+  return function (en)
+    en:shoot()
+  end
+end
+
 behaviors = {
   flyIn = {
     heading(0, 0.5),
+    wait(10),
+    shoot(),
     distance(20),
     animationSpeed(-0.02, 0),
     changeBehavior("fromRight")
@@ -73,6 +88,14 @@ behaviors = {
     distance(45),
     heading(-0.9, -0.3),
     animationSpeed(2, 0.05)
+  },
+  turnAround = {
+    heading(0, 2),
+    animationSpeed(0.35, -0.05),
+    distance(38),
+    shoot(),
+    animateDirection(0.48, 0.015),
+    animationSpeed(2, 0.1)
   }
 }
 
