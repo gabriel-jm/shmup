@@ -1,21 +1,9 @@
 local function sin(value)
-  local n = -math.sin(value * 2 * math.pi)
-
-  if n < -1 or n > 1 or n == -0 then
-    return 0
-  end
-
-  return n
+  return -math.sin(value * math.pi * 2)
 end
 
 local function cos(value)
-  local n = -math.cos(value * 2 * math.pi)
-
-  if n < -1 or n > 1 or n == -0 then
-    return 0
-  end
-
-  return n
+  return math.cos(value * math.pi * 2)
 end
 
 return {

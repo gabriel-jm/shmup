@@ -41,7 +41,7 @@ local function add(props)
     angle = 0,
     speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.behaviors.turnAround,
+    behavior = behaviors.behaviors.sneak,
     behaviorIndex = 1,
     flash = 0,
     wait = 0,
@@ -79,27 +79,23 @@ local function behave(e)
     return
   end
 
-  if e.behavior and e.behavior[e.behaviorIndex] then
-    local beh = e.behavior[e.behaviorIndex]
-    if beh then
-      e.behaviorIndex = e.behaviorIndex + 1
-      beh(e)
-    end
-  end
-
   if e.aniSpeedTarget then
     e.speed = e.speed + e.aniSpeed
     if math.abs(e.aniSpeedTarget - e.speed) < math.abs(e.aniSpeed) then
       e.speed = e.aniSpeedTarget
       e.aniSpeedTarget = nil
     end
-  end
-
-  if e.aniDirTarget then
+  elseif e.aniDirTarget then
     e.angle = e.angle + e.aniDirSpeed
     if math.abs(e.aniDirTarget - e.angle) < math.abs(e.aniDirSpeed) then
       e.angle = e.aniDirTarget
       e.aniDirTarget = nil
+    end
+  elseif e.behavior and e.behavior[e.behaviorIndex] then
+    local beh = e.behavior[e.behaviorIndex]
+    if beh then
+      e.behaviorIndex = e.behaviorIndex + 1
+      beh(e)
     end
   end
 end
@@ -109,8 +105,8 @@ local function update(player)
     behave(e)
 
     -- moviment
-    e.sx = -p8Math.sin(e.angle) * e.speed
-    e.sy = -p8Math.cos(e.angle) * e.speed
+    e.sx = p8Math.sin(e.angle) * e.speed
+    e.sy = p8Math.cos(e.angle) * e.speed
     e.dist = math.max(0, e.dist - math.abs(e.speed))
 
     e.x = e.x + e.sx

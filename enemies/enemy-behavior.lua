@@ -73,6 +73,16 @@ local function shoot()
   end
 end
 
+local function clone(quantity, waitFrames)
+  return function (en)
+    for i=1,quantity do
+      local enClone = copy(en)
+      enClone.wait = enClone.wait + i * waitFrames
+      enClone.behaviorIndex = enClone.behaviorIndex + 1
+    end
+  end
+end
+
 behaviors = {
   flyIn = {
     heading(0, 0.5),
@@ -96,6 +106,19 @@ behaviors = {
     shoot(),
     animateDirection(0.48, 0.015),
     animationSpeed(2, 0.1)
+  },
+  sneak = {
+    heading(-0.15, 1),
+    animateDirection(0.15, 0.01),
+    distance(20),
+    animateDirection(-0.15, -0.01),
+    distance(20),
+    changeBehavior("sneak", 2)
+  },
+  toLeft = {
+    heading(0, 1),
+    wait(10),
+    heading(0.25, 2)
   }
 }
 
