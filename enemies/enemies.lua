@@ -41,7 +41,7 @@ local function add(props)
     angle = 0,
     speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.behaviors.sneak,
+    behavior = behaviors.behaviors.retreatFire,
     behaviorIndex = 1,
     flash = 0,
     wait = 0,
@@ -69,14 +69,29 @@ local function add(props)
   table.insert(enemies, enemy)
 end
 
-local function behave(e)
-  if e.wait > 0 then
-    e.wait = e.wait - 1
+local function runBehavior(e, depth)
+  depth = depth or 1
+
+  if depth > 100 then
     return
   end
 
-  if e.dist > 0 then
-    return
+  if e.behavior and e.behavior[e.behaviorIndex] then
+    local beh = e.behavior[e.behaviorIndex]
+    if beh then
+      e.behaviorIndex = e.behaviorIndex + 1
+      beh(e, enemies)
+    end
+  end
+
+  runBehavior(e, depth + 1)
+end
+
+local function behave(e)
+  if e.wait > 0 then
+    e.wait = e.wait - 1
+  elseif e.dist <= 0 then
+    runBehavior(e)
   end
 
   if e.aniSpeedTarget then
@@ -85,17 +100,13 @@ local function behave(e)
       e.speed = e.aniSpeedTarget
       e.aniSpeedTarget = nil
     end
-  elseif e.aniDirTarget then
+  end
+
+  if e.aniDirTarget then
     e.angle = e.angle + e.aniDirSpeed
     if math.abs(e.aniDirTarget - e.angle) < math.abs(e.aniDirSpeed) then
       e.angle = e.aniDirTarget
       e.aniDirTarget = nil
-    end
-  elseif e.behavior and e.behavior[e.behaviorIndex] then
-    local beh = e.behavior[e.behaviorIndex]
-    if beh then
-      e.behaviorIndex = e.behaviorIndex + 1
-      beh(e)
     end
   end
 end
@@ -175,6 +186,7 @@ local function draw()
 end
 
 return {
+  list = enemies,
   load = load,
   add = add,
   update = update,

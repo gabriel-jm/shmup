@@ -74,11 +74,12 @@ local function shoot()
 end
 
 local function clone(quantity, waitFrames)
-  return function (en)
+  return function (en, list)
     for i=1,quantity do
       local enClone = copy(en)
       enClone.wait = enClone.wait + i * waitFrames
-      enClone.behaviorIndex = enClone.behaviorIndex + 1
+      -- enClone.behaviorIndex = enClone.behaviorIndex + 1
+      table.insert(list, enClone)
     end
   end
 end
@@ -108,17 +109,28 @@ behaviors = {
     animationSpeed(2, 0.1)
   },
   sneak = {
+    clone(6, 15),
     heading(-0.15, 1),
     animateDirection(0.15, 0.01),
     distance(20),
+    shoot(),
     animateDirection(-0.15, -0.01),
     distance(20),
     changeBehavior("sneak", 2)
   },
   toLeft = {
+    heading(0.25, 1.8),
+    clone(4, 10),
+    changeBehavior("flyIn")
+  },
+  retreatFire = {
     heading(0, 1),
-    wait(10),
-    heading(0.25, 2)
+    animationSpeed(0.35, -0.012),
+    distance(48),
+    animationSpeed(-2, -0.003),
+    shoot(),
+    wait(17),
+    changeBehavior("retreatFire", 5)
   }
 }
 
