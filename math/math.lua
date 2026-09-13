@@ -13,3 +13,9 @@ function math.sign(num)
 
   return 0
 end
+
+function math.dist(x1, y1, x2, y2)
+  local dx, dy = x2 - x1, y2 - y1
+
+  return math.sqrt(dx * dx + dy * dy)
+end

@@ -41,7 +41,7 @@ local function add(props)
     angle = 0,
     speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.behaviors.retreatFire,
+    behavior = behaviors.behaviors.follow,
     behaviorIndex = 1,
     flash = 0,
     wait = 0,
@@ -91,11 +91,29 @@ local function runBehavior(e, depth)
   runBehavior(e, depth + 1)
 end
 
-local function behave(e)
+local function behave(e, player)
   if e.wait > 0 then
     e.wait = e.wait - 1
   elseif e.dist <= 0 then
     runBehavior(e)
+  end
+
+  if e.follow then
+    local target = p8Math.atan2((player.x - ScrollX) - e.x, player.y - e.y)
+    -- print(target, e.angle)
+    local diff = target - e.angle
+
+    if math.abs(diff) > 0.5 then
+      diff = diff - math.sign(diff)
+    end
+
+    e.angle = e.angle + math.clamp(diff, -e.followSpeed, e.followSpeed)
+
+    local distance = math.dist(player.x, player.y, e.x, e.y)
+
+    if distance < 20 then
+      e.follow = false
+    end
   end
 
   if e.aniSpeedTarget then
@@ -117,7 +135,7 @@ end
 
 local function update(player)
   for i,e in pairs(enemies) do
-    behave(e)
+    behave(e, player)
 
     -- moviment
     e.sx = p8Math.sin(e.angle) * e.speed

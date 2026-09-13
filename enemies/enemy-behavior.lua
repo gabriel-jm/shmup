@@ -80,9 +80,15 @@ local function clone(quantity, waitFrames)
     for i=1,quantity do
       local enClone = copy(en)
       enClone.wait = enClone.wait + i * waitFrames
-      -- enClone.behaviorIndex = enClone.behaviorIndex + 1
       table.insert(list, enClone)
     end
+  end
+end
+
+local function follow(speed)
+  return function (en)
+    en.follow = true
+    en.followSpeed = speed
   end
 end
 
@@ -134,6 +140,13 @@ behaviors = {
     wait(17),
     shoot(),
     changeBehavior("retreatFire", 5)
+  },
+  follow = {
+    heading(0, 1.2),
+    animationSpeed(1, -0.02),
+    wait(40),
+    animationSpeed(0.8, -0.005),
+    follow(0.008)
   }
 }
 
