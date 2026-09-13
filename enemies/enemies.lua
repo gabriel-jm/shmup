@@ -80,7 +80,11 @@ local function runBehavior(e, depth)
     local beh = e.behavior[e.behaviorIndex]
     if beh then
       e.behaviorIndex = e.behaviorIndex + 1
-      beh(e, enemies)
+      local quit = beh(e, enemies)
+
+      if quit then
+        return
+      end
     end
   end
 

@@ -33,6 +33,7 @@ end
 local function wait(duration)
   return function (en)
     en.wait = duration
+    return true
   end
 end
 
@@ -53,6 +54,7 @@ end
 local function distance(px)
   return function (en)
     en.dist = px
+    return true
   end
 end
 
@@ -124,12 +126,13 @@ behaviors = {
     changeBehavior("flyIn")
   },
   retreatFire = {
-    heading(0, 1),
-    animationSpeed(0.35, -0.012),
+    heading(0, 2),
+    animationSpeed(0.35, -0.05),
     distance(48),
-    animationSpeed(-2, -0.003),
-    shoot(),
+    wait(10),
+    animationSpeed(-2.5, -0.03),
     wait(17),
+    shoot(),
     changeBehavior("retreatFire", 5)
   }
 }
