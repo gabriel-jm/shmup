@@ -41,7 +41,7 @@ local function add(props)
     angle = 0,
     speed = 0,
     lifespan = props.lifespan or 0,
-    behavior = behaviors.behaviors.follow,
+    behavior = behaviors.behaviors.boss,
     behaviorIndex = 1,
     flash = 0,
     wait = 0,

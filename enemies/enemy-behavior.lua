@@ -92,6 +92,18 @@ local function follow(speed)
   end
 end
 
+local function loop(limit, backTo)
+  return function (en)
+    en.loop = en.loop and en.loop + 1 or 1
+
+    if en.loop < limit then
+      en.behaviorIndex = backTo
+    else
+      en.loop = 0
+    end
+  end
+end
+
 behaviors = {
   flyIn = {
     heading(0, 0.5),
@@ -147,6 +159,19 @@ behaviors = {
     wait(40),
     animationSpeed(0.8, -0.005),
     follow(0.008)
+  },
+  boss = {
+    heading(0, 0.7),
+    animationSpeed(0, -0.01),
+    wait(90),
+    heading(0.25, 0),
+    animationSpeed(0.8, 0.02),
+    distance(30),
+    animationSpeed(-0.8, -0.02),
+    distance(90),
+    animationSpeed(0.8, 0.02),
+    distance(90),
+    loop(3, 7)
   }
 }
 
