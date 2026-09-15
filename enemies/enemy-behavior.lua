@@ -168,10 +168,29 @@ behaviors = {
     animationSpeed(0.8, 0.02),
     distance(30),
     animationSpeed(-0.8, -0.02),
+    shoot(),
     distance(90),
     animationSpeed(0.8, 0.02),
+    shoot(),
     distance(90),
-    loop(3, 7)
+    loop(3, 7),
+    animationSpeed(0, -0.02),
+    wait(30),
+    changeBehavior("bossFlyAround", 1)
+  },
+  bossFlyAround = {
+    heading(0, 0),
+    animationSpeed(0.8, 0.01),
+    distance(62),
+    animateDirection(-0.25, -0.004),
+    distance(75),
+    animateDirection(-0.5, -0.004),
+    distance(75),
+    animateDirection(-0.75, -0.004),
+    wait(36),
+    animationSpeed(0, -0.01),
+    wait(60),
+    changeBehavior("boss", 4)
   }
 }
 
